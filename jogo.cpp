@@ -9,7 +9,7 @@
 #define LARG 800
 #define ALT 600
 #define FPS 60
-#define QUANT_NUMEROS 10
+#define QUANT_NUMEROS 100
 
 enum TECLAS{ESQUERDA,DIREITA};
 bool teclas[2] = {false, false};
@@ -75,7 +75,21 @@ int main(){
         return -1;
     }
 
-    imagem = al_load_bitmap("jogo.jpg");
+    switch(nivel){
+    case 1:
+        imagem = al_load_bitmap("fase1.jpg");
+        break;
+    case 2:
+        imagem = al_load_bitmap("fase2.jpg");
+        break;
+    case 3:
+        imagem = al_load_bitmap("fase3.jpg");
+        break;
+    case 4:
+        imagem = al_load_bitmap("fase4.jpg");
+        break;
+    }
+
     if(!imagem){
         fprintf(stderr, "Falha ao carregar imagem!\n");
         return -1;
@@ -102,6 +116,19 @@ int main(){
         if(!isGameOver){
             al_draw_bitmap(imagem, 0,0,0);
             DesenharCaixa(caixa, fonte, nivel);
+            ComecarNumero(numero, QUANT_NUMEROS, n);
+            AtualizarNumero(numero, QUANT_NUMEROS);
+            ColisaoNumeros(numero, QUANT_NUMEROS, caixa, nivel);
+            al_draw_filled_rectangle(3,3, 95, 75, al_map_rgb(0,0,0));
+            al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 5, 0, "Nivel %i", nivel);
+            al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 30, 0, "Vidas: %i",caixa.vidas);
+            al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 55, 0, "Pontos: %i",caixa.pontuacao);
+            DesenharCaixa(caixa, fonte, nivel);
+            DesenharNumero(numero, QUANT_NUMEROS, fonte);
+            al_flip_display();
+            if(caixa.vidas <= 0){
+                isGameOver = true;
+            }
             al_flip_display();
         }
         if(evento.type == ALLEGRO_EVENT_TIMER){
@@ -111,15 +138,6 @@ int main(){
             }
             if(teclas[DIREITA] && !isGameOver){
                 MoverCaixaDireita(caixa);
-            }
-            if(!isGameOver){
-                ComecarNumero(numero, QUANT_NUMEROS, n);
-                AtualizarNumero(numero, QUANT_NUMEROS);
-                ColisaoNumeros(numero, QUANT_NUMEROS, caixa, nivel);
-                al_flip_display();
-                if(caixa.vidas <= 0){
-                    isGameOver = true;
-                }
             }
         }else if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             fim_do_jogo = 1;
@@ -152,13 +170,7 @@ int main(){
         if(redesenhar && al_is_event_queue_empty(fila_de_eventos)){
             redesenhar = false;
             if(!isGameOver){
-                al_draw_filled_rectangle(3,3, 95, 75, al_map_rgb(0,0,0));
-                al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 5, 0, "Nivel %i", nivel);
-                al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 30, 0, "Vidas: %i",caixa.vidas);
-                al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 55, 0, "Pontos: %i",caixa.pontuacao);
-                DesenharCaixa(caixa, fonte, nivel);
-                DesenharNumero(numero, QUANT_NUMEROS, fonte);
-                al_flip_display();
+
 
             }else{
                 al_clear_to_color(al_map_rgb(0,0,0));
