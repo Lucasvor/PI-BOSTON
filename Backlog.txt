@@ -1,0 +1,26 @@
+Lista de Funcionalidades (BackLog)
+  1.	- Fazer o desenho da caixa - 2
+    a.	Criar a moldura da caixa
+    b.	Caracterizar a caixa
+  2.	Fazer a movimentação da caixa (para os lados) - 8 (FEITO)
+    a.	Posicionar a caixa
+    b.	Fazer o código de movimento do objeto
+    c.	Código de colisão
+  3.	- Fazer os números caindo – 13 (FEITO)
+    a.	Programação aleatória dos números
+    b.	Movimentação dos números (Fazer eles “caírem”)
+  4.	-Sistema do jogo (erros e os acertos) - 13 (FEITO)
+    a.	Lógica das instruções
+  5.	-Lógica de itens - 13
+    a.	Itens especiais 
+  6.	-Sistema de pontuação – 13 Melhorar a pontuação nos níveis (FEITO)
+    a.	Lógica de pontuação
+  7.	-Acrescentar som - 8
+    a.	Colocar o som dos erros e acertos
+    b.	Colocar a música de fundo de acordo com o nível do jogo
+  8.	-Ambiente do jogo - 13
+    a.	Colocar os temas do fundo.
+  9.	-Fazer o menu do jogo - 20
+    a.	- Tutorial do jogo
+    b.	-Itens
+    c.	-Ranking
