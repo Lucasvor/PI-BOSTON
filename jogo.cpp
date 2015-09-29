@@ -19,17 +19,18 @@ void DesenharCaixa(CaixaC &caixa, ALLEGRO_FONT *fonte, int &nivel);
 void MoverCaixaEsquerda(CaixaC &caixa);
 void MoverCaixaDireita(CaixaC &caixa);
 
-void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC &caixa, int &nivel);
-
+void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC &caixa, int &nivel, int &acertos);
 void IniciarNumero(Numeros numero[], int tamanho);
 void DesenharNumero(Numeros numero[], int tamanho, ALLEGRO_FONT *fonte);
-void ComecarNumero(Numeros numero[], int tamanho, int &n);
+void ComecarNumero(Numeros numero[], int tamanho, int &n, int &nivel);
 void AtualizarNumero(Numeros numero[], int tamanho);
 
-int main(){
+bool primos(Numeros numero[], int &i);
+int main(int argc, char **argv){
     int fim_do_jogo = 0;
     int nivel = 1;
     int n = 0;
+	int acertos=0;
     bool redesenhar = false;
     bool isGameOver = false;
 
@@ -61,6 +62,7 @@ int main(){
 
     al_init_primitives_addon();
     al_init_image_addon();
+    imagem = al_load_bitmap("fase1.png");
     al_install_keyboard();
     al_init_font_addon();
     al_init_ttf_addon();
@@ -75,27 +77,7 @@ int main(){
         return -1;
     }
 
-    switch(nivel){
-    case 1:
-        imagem = al_load_bitmap("fase1.jpg");
-        break;
-    case 2:
-        imagem = al_load_bitmap("fase2.jpg");
-        break;
-    case 3:
-        imagem = al_load_bitmap("fase3.jpg");
-        break;
-    case 4:
-        imagem = al_load_bitmap("fase4.jpg");
-        break;
-    }
-
-    if(!imagem){
-        fprintf(stderr, "Falha ao carregar imagem!\n");
-        return -1;
-    }
-
-    fonte = al_load_font("digital-7.ttf", 18, 0);
+    fonte = al_load_font("comic.ttf", 18, 0);
     if(!fonte){
         fprintf(stderr, "Falha ao carregar fonte!\n");
         return -1;
@@ -105,27 +87,15 @@ int main(){
     al_register_event_source(fila_de_eventos, al_get_timer_event_source(timer));
 
     al_clear_to_color(al_map_rgb(0,0,0));
-    al_draw_bitmap(imagem, 0,0,0);
     DesenharCaixa(caixa, fonte, nivel);
     al_flip_display();
 
     al_start_timer(timer);
     while (!fim_do_jogo){
+        
         ALLEGRO_EVENT evento;
         al_wait_for_event(fila_de_eventos, &evento);
         if(!isGameOver){
-            al_draw_bitmap(imagem, 0,0,0);
-            DesenharCaixa(caixa, fonte, nivel);
-            ComecarNumero(numero, QUANT_NUMEROS, n);
-            AtualizarNumero(numero, QUANT_NUMEROS);
-            ColisaoNumeros(numero, QUANT_NUMEROS, caixa, nivel);
-            al_draw_filled_rectangle(3,3, 95, 75, al_map_rgb(0,0,0));
-            al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 5, 0, "Nivel %i", nivel);
-            al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 30, 0, "Vidas: %i",caixa.vidas);
-            al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 55, 0, "Pontos: %i",caixa.pontuacao);
-            DesenharCaixa(caixa, fonte, nivel);
-            DesenharNumero(numero, QUANT_NUMEROS, fonte);
-            al_flip_display();
             if(caixa.vidas <= 0){
                 isGameOver = true;
             }
@@ -133,6 +103,36 @@ int main(){
         }
         if(evento.type == ALLEGRO_EVENT_TIMER){
             redesenhar = true;
+			if(acertos == 10){
+				nivel++;
+				acertos = 0;
+                switch(nivel){
+                case 2:
+                    imagem = al_load_bitmap("fase2.png");
+                    break;
+                case 3:
+                    imagem = al_load_bitmap("fase3.jpg");
+                    break;
+                case 4:
+                    imagem = al_load_bitmap("fase4.jpg");
+                    break;
+                }
+			}
+			if(!isGameOver){
+                
+				al_draw_bitmap(imagem, 0,0,0);
+				DesenharCaixa(caixa, fonte, nivel);
+				ComecarNumero(numero, QUANT_NUMEROS, n, nivel);
+				AtualizarNumero(numero, QUANT_NUMEROS);
+				ColisaoNumeros(numero, QUANT_NUMEROS, caixa, nivel,acertos);
+				al_draw_filled_rectangle(3,3, 95, 75, al_map_rgb(0,0,0));
+				al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 5, 0, "Nivel %i", nivel);
+				al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 30, 0, "Vidas: %i",caixa.vidas);
+				al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 55, 0, "Pontos: %i",caixa.pontuacao);
+				DesenharCaixa(caixa, fonte, nivel);
+				DesenharNumero(numero, QUANT_NUMEROS, fonte);
+				al_flip_display();
+			}
             if(teclas[ESQUERDA] && !isGameOver){
                 MoverCaixaEsquerda(caixa);
             }
@@ -188,7 +188,7 @@ int main(){
     return 0;
 }
 
-//Parâmetros da Caixa
+//ParÃ¢metros da Caixa
 void IniciarCaixa(CaixaC &caixa){
     caixa.x = LARG / 2;
     caixa.y = ALT - 10;
@@ -212,6 +212,9 @@ void DesenharCaixa(CaixaC &caixa, ALLEGRO_FONT *fonte, int &nivel){
     case 1:
         al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTER, "PARES");
         break;
+	case 2:
+		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTER, "PRIMOS");
+        break;
     }
 
 }
@@ -228,7 +231,7 @@ void MoverCaixaDireita(CaixaC &caixa){
     }
 }
 
-//Parâmetros dos Números
+//ParÃ¢metros dos NÃºmeros
 void IniciarNumero(Numeros numero[], int tamanho){
     for(int i = 0; i < tamanho; i++){
         numero[i].ID = rand();
@@ -246,14 +249,21 @@ void DesenharNumero(Numeros numero[], int tamanho, ALLEGRO_FONT *fonte){
         }
     }
 }
-void ComecarNumero(Numeros numero[], int tamanho, int &n){
+void ComecarNumero(Numeros numero[], int tamanho, int &n, int &nivel){
     for(int i = 0; i < tamanho; i++){
         if(!numero[i].vivo){
             if(n % 100 == 0){
                 numero[i].vivo = true;
                 numero[i].x = 30 + rand() % (LARG - 60);
                 numero[i].y = 0;
-                numero[i].valor = rand() % 1000;
+                switch(nivel){
+                    case 1:
+                    numero[i].valor = rand() % 1000;
+                    break;
+                    case 2:
+                    numero[i].valor = rand() % 100;
+                    break;
+                }
                 break;
             }
         }
@@ -267,8 +277,8 @@ void AtualizarNumero(Numeros numero[], int tamanho){
     }
 }
 
-//Colisão
-void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC &caixa, int &nivel){
+//ColisÃ£o
+void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC &caixa, int &nivel, int &acertos){
     bool colisaoa = false;
     bool colisaob = false;
     for(int i = 0; i < tamanhoN;i++){
@@ -282,7 +292,7 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC &caixa, int &nivel){
             }else if(numero[i].y == ALT){
                 numero[i].vivo = false;
                 colisaob = true;
-            }
+			}
         }
 
         //PS: Nivel 1 - Pares
@@ -293,32 +303,64 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC &caixa, int &nivel){
         //    Nivel 6 -
         //    Nivel 7 -
         //    Nivel 8 -
-
-        if(colisaoa){
-            switch(nivel){
-            case 1:
+        switch(nivel){
+        case 1:
+            if(colisaoa){
                 if(numero[i].valor % 2 == 0){
                     caixa.pontuacao += 10;
                     colisaoa = false;
-                }else{
-                    caixa.vidas--;
-                    caixa.pontuacao -= 10;
-                    colisaoa = false;
+				   acertos++;
+                    }else{
+                        caixa.vidas--;
+                        caixa.pontuacao -= 10;
+                        colisaoa = false;
+                    }
+                }else if(colisaob){
+                    if(numero[i].valor % 2 == 0){
+                        caixa.pontuacao -= 10;
+                        caixa.vidas--;
+                        colisaob = false;
+                    }else{
+                        colisaob = false;
+                    }
                 }
             break;
-            }
-        }else if(colisaob){
-            switch(nivel){
-            case 1:
-                if(numero[i].valor % 2 == 0){
-                    caixa.pontuacao -= 10;
-                    caixa.vidas--;
-                    colisaob = false;
-                }else{
-                    colisaob = false;
-                }
+			case 2:
+				if(colisaoa){
+					if(primos(numero, i)){
+						caixa.pontuacao += 15;
+						colisaoa=false;
+						acertos++;
+					}else{
+						caixa.vidas--;
+						caixa.pontuacao -=5;
+						colisaoa = false;
+					}
+				}else if(colisaob){
+					if(primos(numero, i)){
+						caixa.pontuacao -= 5;
+						caixa.vidas--;
+						colisaob=false;
+					}else{
+						colisaob = false;
+					}
+				}
             break;
             }
-        }
     }
+}
+
+bool primos(Numeros numero[], int &i){
+	int quantdiv = 0;
+	int abc = 2;
+	for(abc=2; abc < 100; abc++){
+		if(numero[i].valor % abc == 0){
+			quantdiv++;
+		}
+	}
+	if(quantdiv>1){
+		return false;
+	}else{
+		return true;
+	}
 }
