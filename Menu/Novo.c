@@ -96,6 +96,11 @@ int main()
     	}
         if(evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
         {
+            if(regiao == 1)
+                sair = true;
+        }
+        if(evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN)
+        {
             if(regiao == 4)
                 sair = true;
         }
