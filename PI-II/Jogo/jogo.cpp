@@ -1,18 +1,22 @@
-//Inicialização das bibliotecas
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
+//InicializaÃ§Ã£o das bibliotecas
+#include <cstdio>
+#include <cstring>
+#include <string>
+#include <iostream>
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
-//Definição de constantes (Largura, Altura, FPS e Quantidade de Números)
+//DefiniÃ§Ã£o de constantes (Largura, Altura, FPS e Quantidade de NÃºmeros)
 #define LARG 800
 #define ALT 600
 #define FPS 60
 #define QUANT_NUMEROS 50
+#define QUANT_PALAVRAS 300
+
+using namespace std;
 
 typedef struct Caixa{
     int ID;
@@ -36,6 +40,17 @@ typedef struct Numero{
     int valor;
 }Numeros;
 
+typedef struct Palavra{
+    int ID;
+    int x;
+    int y;
+    bool vivo;
+    int velocidade;
+    int limitey;
+    int limitex;
+    string palavra;
+}Palavras;
+
 enum TECLAS{ESQUERDA,DIREITA};
 bool teclas[2] = {false, false};
 
@@ -55,14 +70,13 @@ bool primos(Numeros numero[], int i);
 bool quadperfeito(Numeros numero[], int i);
 
 int main(int argc, char **argv){
-    int fim_do_jogo = 0;
+    bool fim_do_jogo = false;
     int nivel = 1;
     int n = 0;
 	int acertos=0;
 	int Jogo = 0;
     bool redesenhar = false;
     bool isGameOver = false;
-    bool sair = false;
     int regiao = 0;
 
     ALLEGRO_TIMER *timer = NULL;
@@ -73,6 +87,7 @@ int main(int argc, char **argv){
 
     CaixaC caixa;
     Numeros numero[QUANT_NUMEROS];
+    Palavras palavra[QUANT_PALAVRAS];
 
     if(!al_init()){
         fprintf(stderr, "Falha ao iniciar Allegro5!\n");
@@ -110,7 +125,7 @@ int main(int argc, char **argv){
         return -1;
     }
 
-    fonte = al_load_font("digital-7.ttf", 18, 0);
+    fonte = al_load_font("BEBAS.ttf", 18, 0);
     if(!fonte){
         fprintf(stderr, "Falha ao carregar fonte!\n");
         return -1;
@@ -132,7 +147,7 @@ int main(int argc, char **argv){
     		Menu2= al_load_bitmap("Menu2.jpg");
    			Menu3= al_load_bitmap("Menu3.jpg");
    		 	Sair = al_load_bitmap("Sair.jpg");
-   		 	while(!sair){
+   		 	while(Jogo == 0){
                 switch(regiao){
                 case 4:
                     al_draw_bitmap(Sair,0,0,0);
@@ -173,11 +188,9 @@ int main(int argc, char **argv){
                 }
                 if(evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
                     if(regiao == 4)
-                        return 0;
-                    if (regiao == 1){
+                        fim_do_jogo = true;
+                    if (regiao == 1)
                         Jogo = 1;
-                        sair = true;
-                    }
                 }
                 if(evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
                     return 0;
@@ -225,6 +238,7 @@ int main(int argc, char **argv){
                 }
 			}
 			if(!isGameOver){
+                al_flip_display();
 				al_draw_bitmap(imagem, 0,0,0);
 				DesenharCaixa(caixa, fonte, nivel);
 				ComecarNumero(numero, QUANT_NUMEROS, n, nivel);
@@ -233,7 +247,7 @@ int main(int argc, char **argv){
 				PaineldeInfo(acertos, nivel, caixa, fonte);
 				DesenharCaixa(caixa, fonte, nivel);
 				DesenharNumero(numero, QUANT_NUMEROS, fonte);
-				al_flip_display();
+                al_flip_display();
 			}
             if(teclas[ESQUERDA] && !isGameOver){
                 MoverCaixaEsquerda(&caixa);
@@ -242,11 +256,11 @@ int main(int argc, char **argv){
                 MoverCaixaDireita(&caixa);
             }
         }else if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-            fim_do_jogo = 1;
+            fim_do_jogo = true;
         }else if(evento.type == ALLEGRO_EVENT_KEY_DOWN){
             switch(evento.keyboard.keycode){
             case ALLEGRO_KEY_ESCAPE:
-                fim_do_jogo = 1;
+                fim_do_jogo = true;
                 break;
             case ALLEGRO_KEY_LEFT:
                 if(!isGameOver){
@@ -269,16 +283,36 @@ int main(int argc, char **argv){
                 break;
             }
         }
-        if(redesenhar && al_is_event_queue_empty(fila_de_eventos)){
-            redesenhar = false;
+        if(isGameOver && al_is_event_queue_empty(fila_de_eventos)){
             if(isGameOver){
                 al_clear_to_color(al_map_rgb(0,0,0));
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTER, "Game Over!");
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTER, "Pontos: %i", caixa.pontuacao);
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTER, "Aperte ESC para sair.");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Game  Over!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Pontos:  %i", caixa.pontuacao);
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Aperte  ESC  para  sair.");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+50, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  voltar  ao  menu.");
+                if(evento.type == ALLEGRO_EVENT_KEY_DOWN){
+                    switch(evento.keyboard.keycode){
+                    case ALLEGRO_KEY_PAD_ENTER:
+                        Jogo = 0;
+                        IniciarCaixa(&caixa);
+                        IniciarNumero(numero,QUANT_NUMEROS);
+                        acertos=0;
+                        nivel = 0;
+                        isGameOver = false;
+                        break;
+                    case ALLEGRO_KEY_ENTER:
+                        Jogo = 0;
+                        IniciarCaixa(&caixa);
+                        IniciarNumero(numero,QUANT_NUMEROS);
+                        acertos=0;
+                        nivel = 0;
+                        isGameOver = false;
+                        break;
+                    }
+                }
+                al_flip_display();
             }
         }
-        al_flip_display();
         n++;
         }
     }
@@ -287,7 +321,7 @@ int main(int argc, char **argv){
     return 0;
 }
 
-//Parâmetros da Caixa
+//ParÃ¢metros da Caixa
 void IniciarCaixa(CaixaC *caixa){
     caixa->x = LARG / 2;
     caixa->y = ALT - 10;
@@ -308,33 +342,30 @@ void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel){
     al_draw_rectangle(caixa.x+50,caixa.y -30, caixa.x + 30, caixa.y -35, al_map_rgb(0,0,0),1);
 
     //PS: Nivel 1 - Pares
-        //    Nivel 2 - Divisíveis por 5
+        //    Nivel 2 - DivisÃ­veis por 5
         //    Nivel 3 - Divisiveis por 3
         //    Nivel 4 - Primos
         //    Nivel 5 - Divisiveis por 7
         //    Nivel 6 - Quadrados Perfeitos
-        //    Nivel 7 - Números Triangulares
+        //    Nivel 7 - NÃºmeros Triangulares
     switch(nivel){
     case 1:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTER, "PARES");
+        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "PARES");
         break;
     case 2:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTER, "/ POR 5");
+        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "/ POR 5");
         break;
     case 3:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTER, "/ POR 3");
+        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "/ POR 3");
         break;
     case 4:
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTER, "PRIMOS");
+		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "PRIMOS");
         break;
     case 5:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTER, "/ POR 7");
+        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "/ POR 7");
         break;
 	case 6:
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTER, "QUADRADOS PERFEITOS");
-        break;
-	case 7:
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTER, "NUMEROS TRIANGULARES");
+		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "QUADRADOS PERFEITOS");
         break;
     }
 }
@@ -351,23 +382,23 @@ void MoverCaixaDireita(CaixaC *caixa){
     }
 }
 
-//Parâmetros dos Números
+//ParÃ¢metros dos NÃºmeros
 void IniciarNumero(Numeros numero[], int tamanho){
     int i;
     for(i = 0; i < tamanho; i++){
         numero[i].ID = rand();
         numero[i].vivo = false;
         numero[i].velocidade = 4;
-        numero[i].limitex = 13;
-        numero[i].limitey = 13;
+        numero[i].limitex = 18;
+        numero[i].limitey = 18;
     }
 }
 void DesenharNumero(Numeros numero[], int tamanho, ALLEGRO_FONT *fonte){
     int i;
     for(i = 0; i < tamanho; i++){
         if(numero[i].vivo){
-            al_draw_filled_circle(numero[i].x, numero[i].y, 15, al_map_rgb(255,0,0));
-            al_draw_textf(fonte, al_map_rgb(255,255,255), numero[i].x,numero[i].y-7, ALLEGRO_ALIGN_CENTER, "%i", numero[i].valor);
+            al_draw_filled_circle(numero[i].x, numero[i].y, 20, al_map_rgb(255,0,0));
+            al_draw_textf(fonte, al_map_rgb(255,255,255), numero[i].x,numero[i].y-10, ALLEGRO_ALIGN_CENTRE, "%i", numero[i].valor);
         }
     }
 }
@@ -400,7 +431,7 @@ void AtualizarNumero(Numeros numero[], int tamanho){
     }
 }
 
-//Colisão
+//ColisÃ£o
 void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, int *acertos){
     bool colisaoa = false;
     bool colisaob = false;
@@ -420,12 +451,12 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
         }
 
         //PS: Nivel 1 - Pares
-        //    Nivel 2 - Divisíveis por 5
+        //    Nivel 2 - DivisÃ­veis por 5
         //    Nivel 3 - Divisiveis por 3
         //    Nivel 4 - Primos
         //    Nivel 5 - Divisiveis por 7
         //    Nivel 6 - Quadrados Perfeitos
-        //    Nivel 7 - Números Triangulares
+        //    Nivel 7 - NÃºmeros Triangulares
         switch(nivel){
         case 1:
             if(colisaoa){
@@ -435,12 +466,14 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 				    *acertos+=1;
                 }else{
                     caixa->vidas--;
-                    caixa->pontuacao -= 10;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 10;
                     colisaoa = false;
                 }
             }else if(colisaob){
                 if(numero[i].valor % 2 == 0){
-                    caixa->pontuacao -= 10;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 10;
                     caixa->vidas--;
                     colisaob = false;
                 }else{
@@ -456,12 +489,14 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 				    *acertos+=1;
                 }else{
                     caixa->vidas--;
-                    caixa->pontuacao -= 8;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 8;
                     colisaoa = false;
                 }
             }else if(colisaob){
                 if(numero[i].valor % 5 == 0){
-                    caixa->pontuacao -= 8;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 8;
                     caixa->vidas--;
                     colisaob = false;
                 }else{
@@ -477,12 +512,14 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 					*acertos+=1;
 				}else{
 					caixa->vidas--;
-					caixa->pontuacao -=5;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
 					colisaoa = false;
 				}
 			}else if(colisaob){
 				if(numero[i].valor % 3 == 0){
-					caixa->pontuacao -= 5;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
 					caixa->vidas--;
 					colisaob=false;
 				}else{
@@ -498,12 +535,14 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 					*acertos+=1;
 				}else{
 					caixa->vidas--;
-					caixa->pontuacao -=5;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
 					colisaoa = false;
 				}
 			}else if(colisaob){
 				if(primos(numero, i)){
-					caixa->pontuacao -= 5;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
 					caixa->vidas--;
 					colisaob=false;
 				}else{
@@ -519,12 +558,14 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 					*acertos+=1;
 				}else{
 					caixa->vidas--;
-					caixa->pontuacao -=5;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
 					colisaoa = false;
 				}
 			}else if(colisaob){
 				if(numero[i].valor % 7 == 0){
-					caixa->pontuacao -= 5;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
 					caixa->vidas--;
 					colisaob=false;
 				}else{
@@ -540,12 +581,14 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 					*acertos+=1;
 				}else{
 					caixa->vidas--;
-					caixa->pontuacao -=5;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
 					colisaoa = false;
 				}
 			}else if(colisaob){
 				if(quadperfeito(numero, i)){
-					caixa->pontuacao -= 5;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
 					caixa->vidas--;
 					colisaob=false;
 				}else{
@@ -572,9 +615,10 @@ bool primos(Numeros numero[], int i){
 	}
 }
 bool quadperfeito(Numeros numero[], int i){
-    int n,t=0,m;
-    for(n=1;n<101;n+=2){
+    int n,t,m;
+    for(n=1;n<32;n+=2){
     m=n;
+    t = 0;
         while(m>=1){
             t = t + m;
             m = m - 2;
@@ -587,9 +631,32 @@ bool quadperfeito(Numeros numero[], int i){
 }
 
 void PaineldeInfo(int acertos, int nivel, CaixaC caixa, ALLEGRO_FONT *fonte){
-    al_draw_filled_rectangle(3,3, 120, 100, al_map_rgb(0,0,0));
-    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 5, 0, "Nivel %i", nivel);
-    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 30, 0, "Vidas: %i",caixa.vidas);
-    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 55, 0, "Pontos: %i",caixa.pontuacao);
-    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 80, 0, "Acertos: %i/10",acertos);
+    al_draw_filled_rectangle(3,3, 120, 110, al_map_rgb(0,0,0));
+    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 5, 0, "Nivel  %i", nivel);
+    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 30, 0, "Vidas:  %i",caixa.vidas);
+    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 55, 0, "Pontos:  %i",caixa.pontuacao);
+    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 80, 0, "Acertos:  %i/10",acertos);
+}
+
+void DefinirPalavras(Palavras palavra[]){
+    int i;
+    for(i=0;i<QUANT_PALAVRAS;i++){
+        palavra[i].ID=i;
+    }
+
+    //Definir as palavras:
+    // 0 - 50: Substantivos
+    // 50 - 100: Numerais
+    // 100 - 150: Artigos
+    // 150 - 200: Substantivos
+    // 200 - 250: Substantivos
+    // 250 - 300: Adverbios
+
+    //SOMENTE PALAVRAS COM >>DEZ<< LETRAS OU MENOS.
+
+    //SINTAXE: palavra[ID].palavra = "palavra";
+    //Ex:
+
+    palavra[0].palavra = "Batata";
+    palavra[1].palavra = "Flor";
 }
