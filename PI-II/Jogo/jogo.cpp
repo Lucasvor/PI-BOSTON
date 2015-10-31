@@ -305,7 +305,7 @@ int main(int argc, char **argv){
                         IniciarCaixa(&caixa);
                         IniciarNumero(numero,QUANT_NUMEROS);
                         acertos=0;
-                        nivel = 0;
+                        nivel = 1;
                         isGameOver = false;
                         break;
                     }
@@ -411,7 +411,7 @@ void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel){
                 numero[i].x = 30 + rand() % (LARG - 60);
                 numero[i].y = 0;
                 switch(nivel){
-                    case 4:
+                    case 5:
                     numero[i].valor = rand() % 70;
                     break;
                     default:
@@ -451,12 +451,12 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
         }
 
         //PS: Nivel 1 - Pares
-        //    Nivel 2 - Divisíveis por 5
-        //    Nivel 3 - Divisiveis por 3
-        //    Nivel 4 - Primos
-        //    Nivel 5 - Divisiveis por 7
-        //    Nivel 6 - Quadrados Perfeitos
-        //    Nivel 7 - Números Triangulares
+        //    Nivel 2 - Substantivos
+        //    Nivel 3 - Numerais/Divisiveis por 5
+        //    Nivel 4 - Adjetivos/Divisiveis por 3
+        //    Nivel 5 - Pronomes/Primos
+        //    Nivel 6 - Verbos/Divisiveis por 7
+        //    Nivel 7 - Adverbios/Quadrados Perfeitos
         switch(nivel){
         case 1:
             if(colisaoa){
@@ -647,9 +647,9 @@ void DefinirPalavras(Palavras palavra[]){
     //Definir as palavras:
     // 0 - 50: Substantivos
     // 50 - 100: Numerais
-    // 100 - 150: Artigos
-    // 150 - 200: Substantivos
-    // 200 - 250: Substantivos
+    // 100 - 150: Adjetivos
+    // 150 - 200: Pronomes
+    // 200 - 250: Verbos
     // 250 - 300: Adverbios
 
     //SOMENTE PALAVRAS COM >>DEZ<< LETRAS OU MENOS.
