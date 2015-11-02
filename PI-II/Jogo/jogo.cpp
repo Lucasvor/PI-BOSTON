@@ -41,14 +41,15 @@ typedef struct Numero{
 }Numeros;
 
 typedef struct Palavra{
-    int ID;
     int x;
     int y;
     bool vivo;
     int velocidade;
     int limitey;
     int limitex;
+    int ID;
     string palavra;
+    int classificacao;
 }Palavras;
 
 enum TECLAS{ESQUERDA,DIREITA};
@@ -330,18 +331,18 @@ void IniciarCaixa(CaixaC *caixa){
     caixa->ID = 12;
     caixa->vidas = 3;
     caixa->velocidade = 9;
-    caixa->limitex = 40;
+    caixa->limitex = 45;
     caixa->limitey = 50;
     caixa->pontuacao = 0;
 }
 void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel){
 
     al_draw_filled_rectangle(caixa.x-50,caixa.y -50, caixa.x + 50, caixa.y, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x-60,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x+60,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(142,107,35));
+    al_draw_filled_rectangle(caixa.x-70,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(142,107,35));
+    al_draw_filled_rectangle(caixa.x+70,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(142,107,35));
     al_draw_rectangle(caixa.x-50,caixa.y -50, caixa.x + 50, caixa.y, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x-60,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x+60,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(0,0,0),1);
+    al_draw_rectangle(caixa.x-70,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(0,0,0),1);
+    al_draw_rectangle(caixa.x+70,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(0,0,0),1);
 
     //PS: Nivel 1 - Pares
         //    Nivel 2 - Divisíveis por 5
@@ -645,21 +646,26 @@ void DefinirPalavras(Palavras palavra[]){
     int i;
     for(i=0;i<QUANT_PALAVRAS;i++){
         palavra[i].ID=i;
+        if(i>=0 && i<50) palavra[i].classificacao = 1;
+        if(i>=50 && i<100) palavra[i].classificacao = 2;
+        if(i>=100 && i<150) palavra[i].classificacao = 3;
+        if(i>=150 && i<200) palavra[i].classificacao = 4;
+        if(i>=200 && i<250) palavra[i].classificacao = 5;
+        if(i>=250 && i<300) palavra[i].classificacao = 6;
     }
 
     //Definir as palavras:
-    // 0 - 50: Substantivos
-    // 50 - 100: Numerais
-    // 100 - 150: Adjetivos
-    // 150 - 200: Pronomes
-    // 200 - 250: Verbos
-    // 250 - 300: Adverbios
+    // 0 - 49:      Substantivos (Classificacao: 1)
+    // 50 - 99:     Numerais     (Classificacao: 2)
+    // 100 - 149:   Adjetivos    (Classificacao: 3)
+    // 150 - 199:   Pronomes     (Classificacao: 4)
+    // 200 - 249:   Verbos       (Classificacao: 5)
+    // 250 - 299:   Adverbios    (Classificacao: 6)
 
     //SOMENTE PALAVRAS COM >>DEZ<< LETRAS OU MENOS.
 
     //SINTAXE: palavra[ID].palavra = "palavra";
     //Ex:
-
     palavra[0].palavra = "Batata";
     palavra[1].palavra = "Flor";
 }
