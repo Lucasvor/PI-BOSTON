@@ -171,17 +171,17 @@ int main(int argc, char **argv){
                 ALLEGRO_EVENT evento;
                 al_wait_for_event(fila_de_eventos, &evento);
                 if(evento.type == ALLEGRO_EVENT_MOUSE_AXES){
-                    if(evento.mouse.x >= 328 && evento.mouse.x <= 523 &&
-                       evento.mouse.y >= 202 && evento.mouse.y <= 289)
+                    if(evento.mouse.x >= 500 && evento.mouse.x <= 830 &&
+                       evento.mouse.y >= 220 && evento.mouse.y <= 370)
                         regiao = 1;
-                    else if(evento.mouse.x >= 270 && evento.mouse.x <= 609 &&
-                            evento.mouse.y >= 278 && evento.mouse.y <= 367)
+                    else if(evento.mouse.x >= 370 && evento.mouse.x <= 920 &&
+                            evento.mouse.y >= 370 && evento.mouse.y <= 460)
                         regiao = 2;
-                    else if(evento.mouse.x >= 329 && evento.mouse.x <= 538 &&
-                            evento.mouse.y >= 366 && evento.mouse.y <= 466)
+                    else if(evento.mouse.x >= 390 && evento.mouse.x <= 920 &&
+                            evento.mouse.y >= 460 && evento.mouse.y <= 590)
                         regiao = 3;
-                    else if(evento.mouse.x >= 665 && evento.mouse.x <= 796 &&
-                            evento.mouse.y >= 6 && evento.mouse.y <= 95)
+                    else if(evento.mouse.x >= 1070 && evento.mouse.x <= 1270 &&
+                            evento.mouse.y >= 10 && evento.mouse.y <= 150)
                         regiao = 4;
                     else
                         regiao = 0;
