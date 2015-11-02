@@ -1,4 +1,4 @@
-//InicializaÃ§Ã£o das bibliotecas
+//Inicialização das bibliotecas
 #include <cstdio>
 #include <cstring>
 #include <string>
@@ -9,9 +9,9 @@
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
-//DefiniÃ§Ã£o de constantes (Largura, Altura, FPS e Quantidade de NÃºmeros)
-#define LARG 800
-#define ALT 600
+//Definição de constantes (Largura, Altura, FPS e Quantidade de Números)
+#define LARG 1280
+#define ALT 720
 #define FPS 60
 #define QUANT_NUMEROS 50
 #define QUANT_PALAVRAS 300
@@ -108,7 +108,7 @@ int main(int argc, char **argv){
 
     al_init_primitives_addon();
     al_init_image_addon();
-    imagem = al_load_bitmap("fase1.jpg");
+    imagem = al_load_bitmap("temp.png");
     al_install_keyboard();
     al_init_font_addon();
     al_init_ttf_addon();
@@ -187,8 +187,10 @@ int main(int argc, char **argv){
 
                 }
                 if(evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN){
-                    if(regiao == 4)
+                    if(regiao == 4){
                         fim_do_jogo = true;
+                        break;
+                    }
                     if (regiao == 1)
                         Jogo = 1;
                 }
@@ -321,7 +323,7 @@ int main(int argc, char **argv){
     return 0;
 }
 
-//ParÃ¢metros da Caixa
+//Parâmetros da Caixa
 void IniciarCaixa(CaixaC *caixa){
     caixa->x = LARG / 2;
     caixa->y = ALT - 10;
@@ -329,43 +331,44 @@ void IniciarCaixa(CaixaC *caixa){
     caixa->vidas = 3;
     caixa->velocidade = 9;
     caixa->limitex = 40;
-    caixa->limitey = 30;
+    caixa->limitey = 50;
     caixa->pontuacao = 0;
 }
 void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel){
 
-    al_draw_filled_rectangle(caixa.x-40,caixa.y -30, caixa.x + 40, caixa.y, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x-50,caixa.y -30, caixa.x - 30, caixa.y -35, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x+50,caixa.y -30, caixa.x + 30, caixa.y -35, al_map_rgb(142,107,35));
-    al_draw_rectangle(caixa.x-40,caixa.y -30, caixa.x + 40, caixa.y, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x-50,caixa.y -30, caixa.x - 30, caixa.y -35, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x+50,caixa.y -30, caixa.x + 30, caixa.y -35, al_map_rgb(0,0,0),1);
+    al_draw_filled_rectangle(caixa.x-50,caixa.y -50, caixa.x + 50, caixa.y, al_map_rgb(142,107,35));
+    al_draw_filled_rectangle(caixa.x-60,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(142,107,35));
+    al_draw_filled_rectangle(caixa.x+60,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(142,107,35));
+    al_draw_rectangle(caixa.x-50,caixa.y -50, caixa.x + 50, caixa.y, al_map_rgb(0,0,0),1);
+    al_draw_rectangle(caixa.x-60,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(0,0,0),1);
+    al_draw_rectangle(caixa.x+60,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(0,0,0),1);
 
     //PS: Nivel 1 - Pares
-        //    Nivel 2 - DivisÃ­veis por 5
+        //    Nivel 2 - Divisíveis por 5
         //    Nivel 3 - Divisiveis por 3
         //    Nivel 4 - Primos
         //    Nivel 5 - Divisiveis por 7
         //    Nivel 6 - Quadrados Perfeitos
-        //    Nivel 7 - NÃºmeros Triangulares
+        //    Nivel 7 - Números Triangulares
     switch(nivel){
     case 1:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "PARES");
+        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "PARES");
         break;
     case 2:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "/ POR 5");
+        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "/ POR 5");
         break;
     case 3:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "/ POR 3");
+        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "/ POR 3");
         break;
     case 4:
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "PRIMOS");
+		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "PRIMOS");
         break;
     case 5:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "/ POR 7");
+        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "/ POR 7");
         break;
 	case 6:
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-28, ALLEGRO_ALIGN_CENTRE, "QUADRADOS PERFEITOS");
+		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-50, ALLEGRO_ALIGN_CENTRE, "QUADRADOS");
+		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTRE, "PERFEITOS");
         break;
     }
 }
@@ -382,7 +385,7 @@ void MoverCaixaDireita(CaixaC *caixa){
     }
 }
 
-//ParÃ¢metros dos NÃºmeros
+//Parâmetros dos Números
 void IniciarNumero(Numeros numero[], int tamanho){
     int i;
     for(i = 0; i < tamanho; i++){
@@ -431,7 +434,7 @@ void AtualizarNumero(Numeros numero[], int tamanho){
     }
 }
 
-//ColisÃ£o
+//Colisão
 void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, int *acertos){
     bool colisaoa = false;
     bool colisaob = false;
