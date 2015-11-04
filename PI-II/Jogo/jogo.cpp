@@ -68,14 +68,14 @@ void MoverCaixaEsquerdaP(CaixaC *caixa,int nivel);
 void MoverCaixaDireitaP(CaixaC *caixa,int nivel);
 
 void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, int *acertos);
-void IniciarNumero(Numeros numero[], int tamanho);
+void IniciarNumero(Numeros numero[], int tamanho, int nivel);
 void DesenharNumero(Numeros numero[], int tamanho, ALLEGRO_FONT *fonte);
 void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel);
 void AtualizarNumero(Numeros numero[], int tamanho);
 
 void DefinirPalavras(Palavras palavra[]);
 void ColisaoPalavras(Palavras palavra[], int tamanhoN, CaixaC *caixa,CaixaC *caixan, int nivel, int *acertos);
-void IniciarPalavra(Palavras palavra[], int tamanho);
+void IniciarPalavra(Palavras palavra[], int tamanho, int nivel);
 void DesenharPalavra(Palavras palavra[], int tamanho, ALLEGRO_FONT *fonte);
 void ComecarPalavra(Palavras palavra[], int tamanho, int n, int nivel);
 void AtualizarPalavra(Palavras palavra[], int tamanho);
@@ -123,7 +123,6 @@ int main(int argc, char **argv){
 
     al_init_primitives_addon();
     al_init_image_addon();
-    imagem = al_load_bitmap("fase1.png");
     al_install_keyboard();
     al_init_font_addon();
     al_init_ttf_addon();
@@ -205,6 +204,7 @@ int main(int argc, char **argv){
                         break;
                     }
                     if (regiao == 1){
+                        imagem = al_load_bitmap("fase1.png");
                         nivel = 1;
                         acertos = 0;
                         Jogo = 2;
@@ -239,6 +239,9 @@ int main(int argc, char **argv){
 				acertos = 0;
 				Jogo = 2;
                 switch(nivel){
+                case 1:
+                    imagem = al_load_bitmap("fase1.png");
+                    break;
                 case 2:
                     imagem = al_load_bitmap("fase2.jpg");
                     break;
@@ -373,53 +376,80 @@ int main(int argc, char **argv){
         n++;
         }
         if(Jogo == 2){
+            //PS: Nivel 1 - Pares
+            //    Nivel 2 - Substantivos
+            //    Nivel 3 - Numerais/Divisiveis por 5
+            //    Nivel 4 - Adjetivos/Divisiveis por 3
+            //    Nivel 5 - Preposições/Primos
+            //    Nivel 6 - Verbos/Divisiveis por 7
+            //    Nivel 7 - Adverbios/Quadrados Perfeitos
             switch(nivel){
             case 1:
                 al_draw_bitmap(imagem, 0,0,0);
-                al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+50, al_map_rgb(0,0,0));
+                al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+75, al_map_rgb(0,0,0));
                 al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Numeros Pares", nivel);
                 al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  NUMEROS  PARES!");
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  com  as  setas!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+50, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
                 al_flip_display();
                 break;
             case 2:
                 al_draw_bitmap(imagem, 0,0,0);
-                al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+50, al_map_rgb(0,0,0));
+                al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+75, al_map_rgb(0,0,0));
                 al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Substantivos", nivel);
                 al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  SUBSTANTIVOS!");
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  com  as  teclas  A  e  D!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+50, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
                 al_flip_display();
                 break;
             case 3:
                 al_draw_bitmap(imagem, 0,0,0);
-                al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+50, al_map_rgb(0,0,0));
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Substantivos", nivel);
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  SUBSTANTIVOS!");
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
+                al_draw_filled_rectangle(LARG/2-250,ALT/2-55, LARG/2+250, ALT/2+75, al_map_rgb(0,0,0));
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-50, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Numerais  e  Divisiveis  por  5", nivel);
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  NUMERAIS  e  os  NUMEROS  DIVISIVEIS  POR  5!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  dos  numeros  com  as  setas!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  das  palavras  com  as  teclas  A  e  D!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+50, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
                 al_flip_display();
                 break;
             case 4:
                 al_draw_bitmap(imagem, 0,0,0);
-                al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+50, al_map_rgb(0,0,0));
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Numeros Pares", nivel);
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  NUMEROS  PARES!");
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
+                al_draw_filled_rectangle(LARG/2-250,ALT/2-55, LARG/2+250, ALT/2+75, al_map_rgb(0,0,0));
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-50, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Adjetivos  e  Divisiveis  por  3", nivel);
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  ADJETIVOS  e  os  NUMEROS  DIVISIVEIS  POR  3!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  dos  numeros  com  as  setas!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  das  palavras  com  as  teclas  A  e  D!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+50, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
                 al_flip_display();
                 break;
             case 5:
                 al_draw_bitmap(imagem, 0,0,0);
-                al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+50, al_map_rgb(0,0,0));
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Substantivos", nivel);
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  SUBSTANTIVOS!");
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
+                al_draw_filled_rectangle(LARG/2-250,ALT/2-55, LARG/2+250, ALT/2+75, al_map_rgb(0,0,0));
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-50, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Preposicoes  e  Primos", nivel);
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Pegue  somente  as  PREPOSICOES  e  os  NUMEROS  PRIMOS!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  dos  numeros  com  as  setas!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  das  palavras  com  as  teclas  A  e  D!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+50, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
                 al_flip_display();
                 break;
             case 6:
                 al_draw_bitmap(imagem, 0,0,0);
-                al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+50, al_map_rgb(0,0,0));
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Substantivos", nivel);
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  SUBSTANTIVOS!");
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
+                al_draw_filled_rectangle(LARG/2-250,ALT/2-55, LARG/2+250, ALT/2+75, al_map_rgb(0,0,0));
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-50, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Verbos  e  Divisiveis por 7", nivel);
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  VERBOS  e  os  NUMEROS  DIVISIVEIS  POR  7!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  dos  numeros  com  as  setas!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  das  palavras  com  as  teclas  A  e  D!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+50, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
+                al_flip_display();
+                break;
+            case 7:
+                al_draw_bitmap(imagem, 0,0,0);
+                al_draw_filled_rectangle(LARG/2-250,ALT/2-55, LARG/2+250, ALT/2+75, al_map_rgb(0,0,0));
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-50, ALLEGRO_ALIGN_CENTRE, "Nivel  %d:  Adverbios  e  Quadrados Perfeitos", nivel);
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Pegue  somente  os  ADVERBIOS  e  os  QUADRADOS PERFEITOS!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  dos  numeros  com  as  setas!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Movimente  a  caixa  das  palavras  com  as  teclas  A  e  D!");
+                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+50, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  continuar!");
                 al_flip_display();
                 break;
             }
@@ -441,11 +471,13 @@ int main(int argc, char **argv){
                 fim_do_jogo = true;
                 break;
             }
-            IniciarNumero(numero,QUANT_NUMEROS);
-            IniciarPalavra(palavra,QUANT_PALAVRAS);
+            IniciarNumero(numero,QUANT_NUMEROS,nivel);
+            IniciarPalavra(palavra,QUANT_PALAVRAS,nivel);
             if(nivel>2){
                 caixa.x = (LARG / 4) * 3;
                 caixa2.x = LARG / 4;
+                caixa.velocidade = 9;
+                caixa2.velocidade = 9;
             }
         }
     }
@@ -460,7 +492,7 @@ void IniciarCaixa(CaixaC *caixa, int nivel){
     caixa->y = ALT - 10;
     caixa->ID = 12;
     caixa->vidas = 3;
-    caixa->velocidade = 9;
+    caixa->velocidade = 10;
     caixa->limitex = 45;
     caixa->limitey = 50;
     caixa->pontuacao = 0;
@@ -470,7 +502,7 @@ void IniciarCaixaP(CaixaC *caixa, int nivel){
     caixa->y = ALT - 10;
     caixa->ID = 12;
     caixa->vidas = 3;
-    caixa->velocidade = 9;
+    caixa->velocidade = 10;
     caixa->limitex = 45;
     caixa->limitey = 50;
     caixa->pontuacao = 0;
@@ -514,12 +546,12 @@ void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel){
     }
 }
 void DesenharCaixaP(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel){
-    al_draw_filled_rectangle(caixa.x-50,caixa.y -50, caixa.x + 50, caixa.y, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x-70,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x+70,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(142,107,35));
-    al_draw_rectangle(caixa.x-50,caixa.y -50, caixa.x + 50, caixa.y, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x-70,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x+70,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(0,0,0),1);
+    al_draw_filled_rectangle(caixa.x-60,caixa.y -50, caixa.x + 60, caixa.y, al_map_rgb(142,107,35));
+    al_draw_filled_rectangle(caixa.x-80,caixa.y -50, caixa.x - 50, caixa.y -55, al_map_rgb(142,107,35));
+    al_draw_filled_rectangle(caixa.x+80,caixa.y -50, caixa.x + 50, caixa.y -55, al_map_rgb(142,107,35));
+    al_draw_rectangle(caixa.x-60,caixa.y -50, caixa.x + 60, caixa.y, al_map_rgb(0,0,0),1);
+    al_draw_rectangle(caixa.x-80,caixa.y -50, caixa.x - 50, caixa.y -55, al_map_rgb(0,0,0),1);
+    al_draw_rectangle(caixa.x+80,caixa.y -50, caixa.x + 50, caixa.y -55, al_map_rgb(0,0,0),1);
 
         //PS: Nivel 1 - Pares
         //    Nivel 2 - Substantivos
@@ -587,12 +619,15 @@ void MoverCaixaDireitaP(CaixaC *caixa,int nivel){
 }
 
 //Parâmetros dos Números
-void IniciarNumero(Numeros numero[], int tamanho){
+void IniciarNumero(Numeros numero[], int tamanho, int nivel){
     int i;
     for(i = 0; i < tamanho; i++){
         numero[i].ID = rand();
         numero[i].vivo = false;
-        numero[i].velocidade = 4;
+        if(nivel<3)
+            numero[i].velocidade = 3;
+        else
+            numero[i].velocidade = 4;
         numero[i].limitex = 18;
         numero[i].limitey = 18;
     }
@@ -616,7 +651,7 @@ void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel){
                     numero[i].x = 30 + rand() % (LARG - 60);
                     numero[i].y = 0;
                 }else{
-                    numero[i].x = ((LARG/2)+30) + rand() % (LARG - 60);
+                    numero[i].x = ((LARG/2)+30) + rand() % ((LARG/2) - 60);
                     numero[i].y = 0;
                 }
                 switch(nivel){
@@ -690,7 +725,7 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
                 }
             }
         break;
-        case 2:
+        case 3:
             if(colisaoa){
                 if(numero[i].valor % 5 == 0){
                     caixa->pontuacao += 12;
@@ -713,7 +748,7 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
                 }
             }
         break;
-        case 3:
+        case 4:
 			if(colisaoa){
 				if(numero[i].valor % 3 == 0){
 					caixa->pontuacao += 20;
@@ -736,7 +771,7 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 				}
 			}
         break;
-        case 4:
+        case 5:
 			if(colisaoa){
 				if(primos(numero, i)){
 					caixa->pontuacao += 15;
@@ -759,7 +794,7 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 				}
 			}
         break;
-        case 5:
+        case 6:
 			if(colisaoa){
 				if(numero[i].valor % 7 == 0){
 					caixa->pontuacao += 20;
@@ -782,7 +817,7 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 				}
 			}
         break;
-        case 6:
+        case 7:
 			if(colisaoa){
 				if(quadperfeito(numero, i)){
 					caixa->pontuacao += 25;
@@ -1227,11 +1262,14 @@ void DefinirPalavras(Palavras palavra[]){
     int classificacao;
 }Palavras;*/
 
-void IniciarPalavra(Palavras palavra[], int tamanho){
+void IniciarPalavra(Palavras palavra[], int tamanho, int nivel){
     int i;
     for(i = 0; i < tamanho; i++){
         palavra[i].vivo = false;
-        palavra[i].velocidade = 4;
+        if(nivel<3)
+            palavra[i].velocidade = 3;
+        else
+            palavra[i].velocidade = 4;
         palavra[i].limitex = 50;
         palavra[i].limitey = 20;
     }
@@ -1253,10 +1291,10 @@ void ComecarPalavra(Palavras palavra[], int tamanho, int n, int nivel){
                 aux = rand() % 300;
                 palavra[aux].vivo = true;
                 if(nivel<3){
-                    palavra[aux].x = 30 + rand() % (LARG - 60);
+                    palavra[aux].x = 50 + rand() % (LARG - 60);
                     palavra[aux].y = 0;
                 }else{
-                    palavra[aux].x = 30 + rand() % (LARG/2 - 100);
+                    palavra[aux].x = 100 + rand() % (LARG/2) - 110;
                     palavra[aux].y = 0;
                 }
                 break;
