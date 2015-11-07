@@ -642,7 +642,7 @@ void DesenharNumero(Numeros numero[], int tamanho, ALLEGRO_FONT *fonte){
     }
 }
 void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel){
-    int i;
+    int i,certo;
     for(i = 0; i < tamanho; i++){
         if(!numero[i].vivo){
             if(n % 100 == 0){
@@ -654,12 +654,82 @@ void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel){
                     numero[i].x = ((LARG/2)+30) + rand() % ((LARG/2) - 60);
                     numero[i].y = 0;
                 }
+                certo = rand() % 2;
                 switch(nivel){
+                    case 1:
+                        numero[i].valor = rand() % 1000;
+                        if(numero[i].valor % 2 != 0){
+                            if(certo==1)
+                                numero[i].valor++;
+                        }else{
+                            if(certo!=1)
+                                numero[i].valor++;
+                        }
+                        break;
+                    case 3:
+                        numero[i].valor = rand() % 1000;
+                        if(numero[i].valor % 5 != 0){
+                            if(certo==1){
+                                while(numero[i].valor % 5 != 0)
+                                    numero[i].valor++;
+                            }
+                        }else{
+                            if(certo!=1)
+                                numero[i].valor++;
+                        }
+                        break;
+                    case 4:
+                        numero[i].valor = rand() % 1000;
+                        if(numero[i].valor % 3 != 0){
+                            if(certo==1){
+                                while(numero[i].valor % 3 != 0)
+                                    numero[i].valor++;
+                            }
+                        }else{
+                            if(certo!=1)
+                                numero[i].valor++;
+                        }
+                        break;
                     case 5:
-                    numero[i].valor = rand() % 70;
-                    break;
-                    default:
-                    numero[i].valor = rand() % 1000;
+                        numero[i].valor = rand() % 70;
+                        if(!primos(numero,i)){
+                            if(certo==1){
+                                while(!primos(numero,i))
+                                    numero[i].valor--;
+                            }
+                        }else{
+                            if(certo!=1)
+                                numero[i].valor++;
+                        }
+                        break;
+                    case 6:
+                        numero[i].valor = rand() % 1000;
+                        if(numero[i].valor % 7 != 0){
+                            if(certo==1){
+                                while(numero[i].valor % 7 != 0)
+                                    numero[i].valor++;
+                            }
+                        }else{
+                            if(certo!=1)
+                                numero[i].valor++;
+                        }
+                        break;
+                    case 7:
+                        numero[i].valor = rand() % 1000;
+                        if(!quadperfeito(numero,i)){
+                            if(certo==1){
+                                while(!quadperfeito(numero,i)){
+                                    if(numero[i].valor % 2 == 0)
+                                        numero[i].valor-=3;
+                                    else
+                                        numero[i].valor-=2;
+                                }
+                            }
+                        }else{
+                            if(certo!=1)
+                                numero[i].valor++;
+                        }
+                        break;
                 }
                 break;
             }
@@ -1284,11 +1354,62 @@ void DesenharPalavra(Palavras palavra[], int tamanho, ALLEGRO_FONT *fonte){
     }
 }
 void ComecarPalavra(Palavras palavra[], int tamanho, int n, int nivel){
-    int i,aux;
+    int i,aux,certo;
     for(i = 0; i < tamanho; i++){
         if(!palavra[i].vivo){
             if(n % 100 == 0){
-                aux = rand() % 300;
+                certo = rand() % 2;
+                if(certo==1){
+                    switch(nivel){
+                    case 2:
+                        aux = rand() % 50;
+                        break;
+                    case 3:
+                        aux = rand() % 50 + 50;
+                        break;
+                    case 4:
+                        aux = rand() % 50 + 100;
+                        break;
+                    case 5:
+                        aux = rand() % 50 + 150;
+                        break;
+                    case 6:
+                        aux = rand() % 50 + 200;
+                        break;
+                    case 7:
+                        aux = rand() % 50 + 250;
+                        break;
+                    }
+                }else{
+                    aux = rand() % 300;
+                    switch(nivel){
+                    case 2:
+                        if(aux>=0 && aux<50)
+                            aux+=50;
+                        break;
+                    case 3:
+                        if(aux>=50 && aux<100)
+                            aux+=50;
+                        break;
+                    case 4:
+                        if(aux>=100 && aux<150)
+                            aux+=50;
+                        break;
+                    case 5:
+                        if(aux>=150 && aux<200)
+                            aux+=50;
+                        break;
+                    case 6:
+                        if(aux>=200 && aux<250)
+                            aux+=50;
+                        break;
+                    case 7:
+                        if(aux>=250 && aux<300)
+                            aux-=50;
+                        break;
+                    }
+                }
+
                 palavra[aux].vivo = true;
                 if(nivel<3){
                     palavra[aux].x = 50 + rand() % (LARG - 60);
