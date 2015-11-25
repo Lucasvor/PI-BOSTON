@@ -17,7 +17,7 @@ bool teclas[4] = {false, false, false, false};
 int main(int argc, char **argv){
     bool fim_do_jogo = false;
     int nivel = 1;
-    int n = 0;
+    int n = 0,status = 0,status2 = 0;
 	int acertos=0;
 	int Jogo = 0;
     bool isGameOver = false;
@@ -165,30 +165,44 @@ int main(int argc, char **argv){
             }
         }
         if(evento.type == ALLEGRO_EVENT_TIMER){
-			if(acertos == 10){
-				nivel++;
-				acertos = 0;
-				Jogo = 2;
+			if(acertos >= 10){
+                if(nivel==7){
+                    isGameOver = true;
+                }
+                nivel++;
+                acertos = 0;
+                Jogo = 2;
+                teclas[ESQUERDA] = false;
+                teclas[DIREITA] = false;
+                teclas[ESQUERDAP] = false;
+                teclas[DIREITAP] = false;
                 switch(nivel){
                 case 1:
+                    al_destroy_bitmap(imagem);
                     imagem = al_load_bitmap("Fases/fase1.png");
                     break;
                 case 2:
+                    al_destroy_bitmap(imagem);
                     imagem = al_load_bitmap("Fases/fase2.jpg");
                     break;
                 case 3:
+                    al_destroy_bitmap(imagem);
                     imagem = al_load_bitmap("Fases/fase3.jpg");
                     break;
                 case 4:
+                    al_destroy_bitmap(imagem);
                     imagem = al_load_bitmap("Fases/fase4.jpg");
                     break;
                 case 5:
+                    al_destroy_bitmap(imagem);
                     imagem = al_load_bitmap("Fases/fase5.jpg");
                     break;
                 case 6:
+                    al_destroy_bitmap(imagem);
                     imagem = al_load_bitmap("Fases/fase6.jpg");
                     break;
                 case 7:
+                    al_destroy_bitmap(imagem);
                     imagem = al_load_bitmap("Fases/fase7.jpg");
                     break;
                 }
@@ -197,18 +211,20 @@ int main(int argc, char **argv){
 				al_draw_bitmap(imagem, 0,0,0);
                 PaineldeInfo(acertos, nivel, caixa, fonte);
 
+                al_draw_filled_rectangle(0,ALT - 45, LARG, ALT - 40, al_map_rgb(150,0,0));
+
 				if(nivel!=2){
-                    DesenharCaixa(caixa, fonte, nivel);
+                    DesenharCaixa(caixa, fonte, nivel,&status);
                     ComecarNumero(numero, QUANT_NUMEROS, n, nivel);
-                    AtualizarNumero(numero, QUANT_NUMEROS);
+                    AtualizarNumero(numero, QUANT_NUMEROS, caixa, &status);
                     ColisaoNumeros(numero, QUANT_NUMEROS, &caixa, nivel, &acertos);
                     DesenharNumero(numero, QUANT_NUMEROS, fonte);
                 }
 
                 if(nivel!=1){
-                    DesenharCaixaP(caixa2, fonte, nivel);
+                    DesenharCaixaP(caixa2, fonte, nivel, &status2);
                     ComecarPalavra(palavra, QUANT_PALAVRAS, n, nivel);
-                    AtualizarPalavra(palavra, QUANT_PALAVRAS);
+                    AtualizarPalavra(palavra, QUANT_PALAVRAS, &status2, caixa2);
                     ColisaoPalavras(palavra, QUANT_PALAVRAS, &caixa2, &caixa, nivel, &acertos);
                     DesenharPalavra(palavra, QUANT_PALAVRAS, fonte);
                 }
@@ -219,15 +235,19 @@ int main(int argc, char **argv){
 			}
             if(teclas[ESQUERDA] && !isGameOver){
                 MoverCaixaEsquerda(&caixa,nivel);
+                status = 2;
             }
             if(teclas[DIREITA] && !isGameOver){
                 MoverCaixaDireita(&caixa,nivel);
+                status = 1;
             }
             if(teclas[ESQUERDAP] && !isGameOver){
                 MoverCaixaEsquerdaP(&caixa2,nivel);
+                status2 = 2;
             }
             if(teclas[DIREITAP] && !isGameOver){
                 MoverCaixaDireitaP(&caixa2,nivel);
+                status2 = 1;
             }
         }else if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
             fim_do_jogo = true;
@@ -238,22 +258,32 @@ int main(int argc, char **argv){
                 break;
             case ALLEGRO_KEY_LEFT:
                 if(!isGameOver){
-                teclas[ESQUERDA] = true;
+                    teclas[ESQUERDA] = true;
+                    status = 2;
                 }
                 break;
             case ALLEGRO_KEY_RIGHT:
                 if(!isGameOver){
-                teclas[DIREITA] = true;
+                    teclas[DIREITA] = true;
+                    status = 1;
                 }
+                break;
+            case ALLEGRO_KEY_UP:
+                status = 3;
+                break;
+            case ALLEGRO_KEY_DOWN:
+                status = 4;
                 break;
             case ALLEGRO_KEY_A:
                 if(!isGameOver){
-                teclas[ESQUERDAP] = true;
+                    teclas[ESQUERDAP] = true;
+                    status2 = 2;
                 }
                 break;
             case ALLEGRO_KEY_D:
                 if(!isGameOver){
-                teclas[DIREITAP] = true;
+                    teclas[DIREITAP] = true;
+                    status2 = 1;
                 }
                 break;
             case ALLEGRO_KEY_K:
@@ -265,23 +295,36 @@ int main(int argc, char **argv){
         }else if(evento.type == ALLEGRO_EVENT_KEY_UP){
             switch(evento.keyboard.keycode){
             case ALLEGRO_KEY_LEFT:
+                status = 0;
                 teclas[ESQUERDA] = false;
                 break;
             case ALLEGRO_KEY_RIGHT:
+                status = 0;
                 teclas[DIREITA] = false;
                 break;
             case ALLEGRO_KEY_A:
+                status2 = 0;
                 teclas[ESQUERDAP] = false;
                 break;
             case ALLEGRO_KEY_D:
+                status2 = 0;
                 teclas[DIREITAP] = false;
+                break;
+            case ALLEGRO_KEY_UP:
+                status = 0;
+                break;
+            case ALLEGRO_KEY_DOWN:
+                status = 0;
                 break;
             }
         }
         if(isGameOver && al_is_event_queue_empty(fila_de_eventos)){
             if(isGameOver){
                 al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+80, al_map_rgb(0,0,0));
-                al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Game  Over!");
+                if(nivel>7)
+                    al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Parabens!  Voce  terminou  o  jogo!");
+                else
+                    al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Game  Over!");
                 al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2), ALLEGRO_ALIGN_CENTRE, "Pontos:  %i", caixa.pontuacao);
                 al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+25, ALLEGRO_ALIGN_CENTRE, "Aperte  ESC  para  sair.");
                 al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)+50, ALLEGRO_ALIGN_CENTRE, "Aperte  ENTER  para  voltar  ao  menu.");
@@ -410,9 +453,42 @@ int main(int argc, char **argv){
                 caixa.velocidade = 9;
                 caixa2.velocidade = 9;
             }
+            status = 0;
+            status2 = 0;
         }
     }
     al_destroy_display(janela);
     al_destroy_bitmap(imagem);
     return 0;
+}
+
+void AtualizarNumero(Numeros numero[], int tamanho, CaixaC caixa, int *status){
+    int i;
+    for(i=0; i<tamanho;i++){
+        if(numero[i].vivo){
+            numero[i].y += numero[i].velocidade;
+            //al_draw_filled_rectangle(caixa.x-caixa.limitex-30,caixa.y-caixa.limitey-100,caixa.x+caixa.limitex+30,caixa.y-caixa.limitey-5, al_map_rgb(0,0,0));
+            if(numero[i].x - numero[i].limitex < caixa.x + caixa.limitex + 30 &&
+               numero[i].x + numero[i].limitex > caixa.x - caixa.limitex - 30 &&
+               numero[i].y - numero[i].limitey < caixa.y + caixa.limitey -5 &&
+               numero[i].y + numero[i].limitey > caixa.y - caixa.limitey - 100){
+                    *status = 5;
+               }
+        }
+    }
+}
+
+void AtualizarPalavra(Palavras palavra[], int tamanho, int *status, CaixaC caixa){
+    int i;
+    for(i=0; i<tamanho;i++){
+        if(palavra[i].vivo){
+            palavra[i].y += palavra[i].velocidade;
+            if(palavra[i].x - palavra[i].limitex < caixa.x + caixa.limitex + 30 &&
+               palavra[i].x + palavra[i].limitex > caixa.x - caixa.limitex - 30 &&
+               palavra[i].y - palavra[i].limitey < caixa.y + caixa.limitey -5 &&
+               palavra[i].y + palavra[i].limitey > caixa.y - caixa.limitey - 100){
+                    *status = 5;
+               }
+        }
+    }
 }

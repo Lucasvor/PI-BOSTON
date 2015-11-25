@@ -1,0 +1,79 @@
+# depslib dependency file v1.0
+1447015369 source:c:\users\lucas\desktop\pi-ii\project jogo\function.cpp
+	<cstdio>
+	<cstring>
+	<string>
+	<iostream>
+	<allegro5/allegro.h>
+	<allegro5/allegro_image.h>
+	<allegro5/allegro_primitives.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_ttf.h>
+	"Function.h"
+
+1447015240 c:\users\lucas\desktop\pi-ii\project jogo\function.h
+
+1447015749 source:c:\users\lucas\desktop\pi-ii\project jogo\main.cpp
+	<cstdio>
+	<cstring>
+	<string>
+	<iostream>
+	<allegro5/allegro.h>
+	<allegro5/allegro_image.h>
+	<allegro5/allegro_primitives.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_ttf.h>
+	"Function.h"
+
+1447194935 source:c:\users\gabriellins\downloads\project jogo\project jogo\function.cpp
+	<cstdio>
+	<cstring>
+	<string>
+	<iostream>
+	<allegro5/allegro.h>
+	<allegro5/allegro_image.h>
+	<allegro5/allegro_primitives.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_ttf.h>
+	"Function.h"
+
+1447015240 c:\users\gabriellins\downloads\project jogo\project jogo\function.h
+
+1447195669 source:c:\users\gabriellins\downloads\project jogo\project jogo\main.cpp
+	<cstdio>
+	<cstring>
+	<string>
+	<iostream>
+	<allegro5/allegro.h>
+	<allegro5/allegro_image.h>
+	<allegro5/allegro_primitives.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_ttf.h>
+	"Function.h"
+
+1448395792 source:c:\users\gabriellins\downloads\project jogo\jogo\main.cpp
+	<cstdio>
+	<cstring>
+	<string>
+	<iostream>
+	<allegro5/allegro.h>
+	<allegro5/allegro_image.h>
+	<allegro5/allegro_primitives.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_ttf.h>
+	"Function.h"
+
+1448395738 c:\users\gabriellins\downloads\project jogo\jogo\function.h
+
+1448395445 source:c:\users\gabriellins\downloads\project jogo\jogo\function.cpp
+	<cstdio>
+	<cstring>
+	<string>
+	<iostream>
+	<allegro5/allegro.h>
+	<allegro5/allegro_image.h>
+	<allegro5/allegro_primitives.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_ttf.h>
+	"Function.h"
+

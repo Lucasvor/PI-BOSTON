@@ -10,6 +10,8 @@
 
 #include "Function.h"
 
+int frameatual = 0, framecontador = 0, framecd = 1, faltura,flargura,numframes;
+int frameatualp = 0, framecontadorp = 0, framecdp = 1, falturap,flargurap,numframesp;
 void PaineldeInfo(int acertos, int nivel, CaixaC caixa, ALLEGRO_FONT *fonte){
     al_draw_filled_rectangle(3,3, 120, 110, al_map_rgb(0,0,0));
     al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 5, 0, "Nivel  %i", nivel);
@@ -18,72 +20,95 @@ void PaineldeInfo(int acertos, int nivel, CaixaC caixa, ALLEGRO_FONT *fonte){
     al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 80, 0, "Acertos:  %i/10",acertos);
 }
 //Parâmetros da Caixa e CaixaP(alavra)
+
 void IniciarCaixa(CaixaC *caixa, int nivel){
     caixa->x = LARG / 2;
     caixa->y = ALT - 10;
     caixa->ID = 12;
     caixa->vidas = 3;
     caixa->velocidade = 10;
-    caixa->limitex = 45;
-    caixa->limitey = 50;
+    caixa->limitex = 22;
+    caixa->limitey = 85;
     caixa->pontuacao = 0;
 }
 
-void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel){
-
-    al_draw_filled_rectangle(caixa.x-50,caixa.y -50, caixa.x + 50, caixa.y, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x-70,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x+70,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(142,107,35));
-    al_draw_rectangle(caixa.x-50,caixa.y -50, caixa.x + 50, caixa.y, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x-70,caixa.y -50, caixa.x - 40, caixa.y -55, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x+70,caixa.y -50, caixa.x + 40, caixa.y -55, al_map_rgb(0,0,0),1);
-
-    //PS: Nivel 1 - Pares
-        //    Nivel 2 - Substantivos
-        //    Nivel 3 - Numerais/Divisiveis por 5
-        //    Nivel 4 - Adjetivos/Divisiveis por 3
-        //    Nivel 5 - Preposições/Primos
-        //    Nivel 6 - Verbos/Divisiveis por 7
-        //    Nivel 7 - Adverbios/Quadrados Perfeitos
-    switch(nivel){
+void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status){
+    ALLEGRO_BITMAP *imagem = NULL;
+    switch(*status){ //0: Parado / 1: Andando Direita / 2: Andando Esquerda /
+                    //3: Fantasma Direita /  4: Fantasma Esquerdo / 5: Olhar para cima direita /
+    case 0:
+        imagem = al_load_bitmap("sprites/frente.png");
+        numframes = 5;
+        flargura = 65;
+        faltura = 76;
+        break;
     case 1:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "PARES");
+        imagem = al_load_bitmap("sprites/cu.png");
+        numframes = 4;
+        flargura = 63;
+        faltura = 81;
+        break;
+    case 2:
+        imagem = al_load_bitmap("sprites/Cuesquerdo.png");
+        numframes = 4;
+        flargura = 63;
+        faltura = 81;
         break;
     case 3:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "/ POR 5");
+        imagem = al_load_bitmap("sprites/fantasma-atualizado-D.png");
+        numframes = 14;
+        flargura = 67;
+        faltura = 72;
         break;
     case 4:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "/ POR 3");
+        imagem = al_load_bitmap("sprites/fantasma-atualizado-E.png");
+        numframes = 14;
+        flargura = 67;
+        faltura = 72;
         break;
     case 5:
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "PRIMOS");
-        break;
-    case 6:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "/ POR 7");
-        break;
-	case 7:
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-50, ALLEGRO_ALIGN_CENTRE, "QUADRADOS");
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-25, ALLEGRO_ALIGN_CENTRE, "PERFEITOS");
+        imagem = al_load_bitmap("sprites/ceu.png");
+        numframes = 8;
+        flargura = 65;
+        faltura = 78;
         break;
     }
+    //al_draw_filled_rectangle(caixa.x-caixa.limitex-30,caixa.y-caixa.limitey-100,caixa.x+caixa.limitex+30,caixa.y-caixa.limitey-5, al_map_rgb(0,0,0));
+    if(++framecontador%5 == framecd){
+        if(++frameatual >= numframes){
+            if(*status==5 || *status==6)
+                *status = 0;
+            frameatual=0;
+        }
+        al_draw_bitmap_region(imagem,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
+    }
+    al_draw_bitmap_region(imagem,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
+
+    //PS: Nivel 1 - Pares
+    //    Nivel 2 - Substantivos
+    //    Nivel 3 - Numerais/Divisiveis por 5
+    //    Nivel 4 - Adjetivos/Divisiveis por 3
+    //    Nivel 5 - Preposições/Primos
+    //    Nivel 6 - Verbos/Divisiveis por 7
+    //    Nivel 7 - Adverbios/Quadrados Perfeitos
 }
 
 void MoverCaixaEsquerda(CaixaC *caixa,int nivel){
     caixa->x -= caixa->velocidade;
     if(nivel==1){
-        if(caixa->x<50){
-            caixa->x = 50;
+        if(caixa->x<22){
+            caixa->x = 22;
         }
     }else{
-        if(caixa->x<(LARG/2)+60){
-            caixa->x = (LARG/2)+60;
+        if(caixa->x<(LARG/2)+22){
+            caixa->x = (LARG/2)+22;
         }
     }
 }
 void MoverCaixaDireita(CaixaC *caixa,int nivel){
     caixa->x += caixa->velocidade;
-    if(caixa->x>LARG-50){
-        caixa->x = LARG-50;
+    if(caixa->x>LARG-22){
+        caixa->x = LARG-22;
     }
 }
 
@@ -93,58 +118,82 @@ void IniciarCaixaP(CaixaC *caixa, int nivel){
     caixa->ID = 12;
     caixa->vidas = 3;
     caixa->velocidade = 10;
-    caixa->limitex = 45;
-    caixa->limitey = 50;
+    caixa->limitex = 22;
+    caixa->limitey = 85;
     caixa->pontuacao = 0;
 }
 
-void DesenharCaixaP(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel){
-    al_draw_filled_rectangle(caixa.x-60,caixa.y -50, caixa.x + 60, caixa.y, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x-80,caixa.y -50, caixa.x - 50, caixa.y -55, al_map_rgb(142,107,35));
-    al_draw_filled_rectangle(caixa.x+80,caixa.y -50, caixa.x + 50, caixa.y -55, al_map_rgb(142,107,35));
-    al_draw_rectangle(caixa.x-60,caixa.y -50, caixa.x + 60, caixa.y, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x-80,caixa.y -50, caixa.x - 50, caixa.y -55, al_map_rgb(0,0,0),1);
-    al_draw_rectangle(caixa.x+80,caixa.y -50, caixa.x + 50, caixa.y -55, al_map_rgb(0,0,0),1);
-
-        //PS: Nivel 1 - Pares
-        //    Nivel 2 - Substantivos
-        //    Nivel 3 - Numerais/Divisiveis por 5
-        //    Nivel 4 - Adjetivos/Divisiveis por 3
-        //    Nivel 5 - Preposições/Primos
-        //    Nivel 6 - Verbos/Divisiveis por 7
-        //    Nivel 7 - Adverbios/Quadrados Perfeitos
-    switch(nivel){
+void DesenharCaixaP(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status){
+    ALLEGRO_BITMAP *imagem = NULL;
+    switch(*status){ //0: Parado / 1: Andando Direita / 2: Andando Esquerda /
+                    //3: Fantasma Direita /  4: Fantasma Esquerdo / 5: Olhar para cima direita /
+    case 0:
+        imagem = al_load_bitmap("sprites/frente.png");
+        numframesp = 5;
+        flargurap = 65;
+        falturap = 76;
+        break;
+    case 1:
+        imagem = al_load_bitmap("sprites/cu.png");
+        numframesp = 4;
+        flargurap = 63;
+        falturap = 81;
+        break;
     case 2:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "SUBSTANTIVOS");
+        imagem = al_load_bitmap("sprites/Cuesquerdo.png");
+        numframesp = 4;
+        flargurap = 63;
+        falturap = 81;
         break;
     case 3:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "NUMERAIS");
+        imagem = al_load_bitmap("sprites/fantasma-atualizado-D.png");
+        numframesp = 14;
+        flargurap = 67;
+        falturap = 72;
         break;
     case 4:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "ADJETIVOS");
+        imagem = al_load_bitmap("sprites/fantasma-atualizado-E.png");
+        numframesp = 14;
+        flargurap = 67;
+        falturap = 72;
         break;
     case 5:
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "PREPOSICOES");
-        break;
-    case 6:
-        al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "VERBOS");
-        break;
-	case 7:
-		al_draw_textf(fonte, al_map_rgb(255,255,255), caixa.x,caixa.y-38, ALLEGRO_ALIGN_CENTRE, "ADVERBIOS");
+        imagem = al_load_bitmap("sprites/ceu.png");
+        numframesp = 8;
+        flargurap = 65;
+        falturap = 78;
         break;
     }
+    //al_draw_filled_rectangle(caixa.x-caixa.limitex-30,caixa.y-caixa.limitey-100,caixa.x+caixa.limitex+30,caixa.y-caixa.limitey-5, al_map_rgb(0,0,0));
+    if(++framecontadorp%5 == framecdp){
+        if(++frameatualp >= numframesp){
+            if(*status==5 || *status==6)
+                *status = 0;
+            frameatualp=0;
+        }
+        al_draw_bitmap_region(imagem,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
+    }
+    al_draw_bitmap_region(imagem,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
+
+    //PS: Nivel 1 - Pares
+    //    Nivel 2 - Substantivos
+    //    Nivel 3 - Numerais/Divisiveis por 5
+    //    Nivel 4 - Adjetivos/Divisiveis por 3
+    //    Nivel 5 - Preposições/Primos
+    //    Nivel 6 - Verbos/Divisiveis por 7
+    //    Nivel 7 - Adverbios/Quadrados Perfeitos
 }
 void MoverCaixaEsquerdaP(CaixaC *caixa,int nivel){
     caixa->x -= caixa->velocidade;
-    if(caixa->x<50){
-        caixa->x = 50;
+    if(caixa->x<60){
+        caixa->x = 60;
     }
 }
 void MoverCaixaDireitaP(CaixaC *caixa,int nivel){
     caixa->x += caixa->velocidade;
     if(nivel==2){
-        if(caixa->x>LARG-50){
-            caixa->x = LARG-50;
+        if(caixa->x>LARG-60){
+            caixa->x = LARG-60;
         }
     }else{
         if(caixa->x>(LARG/2)-60){
@@ -166,7 +215,7 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
                numero[i].y + numero[i].limitey > caixa->y - caixa->limitey){
                 colisaoa = true;
                 numero[i].vivo = false;
-            }else if(numero[i].y == ALT){
+            }else if(numero[i].y >= ALT-60){
                 numero[i].vivo = false;
                 colisaob = true;
 			}
@@ -328,10 +377,7 @@ void IniciarNumero(Numeros numero[], int tamanho, int nivel){
     for(i = 0; i < tamanho; i++){
         numero[i].ID = rand();
         numero[i].vivo = false;
-        if(nivel<3)
-            numero[i].velocidade = 3;
-        else
-            numero[i].velocidade = 4;
+        numero[i].velocidade = 3;
         numero[i].limitex = 18;
         numero[i].limitey = 18;
     }
@@ -354,10 +400,10 @@ void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel){
             if(n % 100 == 0){
                 numero[i].vivo = true;
                 if(nivel<3){
-                    numero[i].x = 30 + rand() % (LARG - 60);
+                    numero[i].x = 40 + rand() % (LARG - 60);
                     numero[i].y = 0;
                 }else{
-                    numero[i].x = ((LARG/2)+30) + rand() % ((LARG/2) - 60);
+                    numero[i].x = ((LARG/2)+40) + rand() % ((LARG/2) - 60);
                     numero[i].y = 0;
                 }
                 certo = rand() % 2;
@@ -439,15 +485,6 @@ void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel){
                 }
                 break;
             }
-        }
-    }
-}
-
-void AtualizarNumero(Numeros numero[], int tamanho){
-    int i;
-    for(i=0; i<tamanho;i++){
-        if(numero[i].vivo){
-            numero[i].y += numero[i].velocidade;
         }
     }
 }
@@ -863,7 +900,7 @@ void ColisaoPalavras(Palavras palavra[], int tamanhoN, CaixaC *caixa,CaixaC *cai
                palavra[i].y + palavra[i].limitey > caixa->y - caixa->limitey){
                 colisaoa = true;
                 palavra[i].vivo = false;
-            }else if(palavra[i].y == ALT){
+            }else if(palavra[i].y == ALT-60){
                 palavra[i].vivo = false;
                 colisaob = true;
 			}
@@ -1026,10 +1063,7 @@ void IniciarPalavra(Palavras palavra[], int tamanho, int nivel){
     int i;
     for(i = 0; i < tamanho; i++){
         palavra[i].vivo = false;
-        if(nivel<3)
-            palavra[i].velocidade = 3;
-        else
-            palavra[i].velocidade = 4;
+        palavra[i].velocidade = 3;
         palavra[i].limitex = 50;
         palavra[i].limitey = 20;
     }
@@ -1104,10 +1138,10 @@ void ComecarPalavra(Palavras palavra[], int tamanho, int n, int nivel){
 
                 palavra[aux].vivo = true;
                 if(nivel<3){
-                    palavra[aux].x = 50 + rand() % (LARG - 60);
+                    palavra[aux].x = 100 + rand() % (LARG - 100);
                     palavra[aux].y = 0;
                 }else{
-                    palavra[aux].x = 100 + rand() % (LARG/2) - 110;
+                    palavra[aux].x = 100 + rand() % ((LARG/2) - 150);
                     palavra[aux].y = 0;
                 }
                 break;

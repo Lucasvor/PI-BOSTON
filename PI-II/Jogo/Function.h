@@ -44,12 +44,12 @@ typedef struct Palavra{
 
 void PaineldeInfo(int acertos, int nivel, CaixaC caixa, ALLEGRO_FONT *fonte);
 void IniciarCaixa(CaixaC *caixa,int nivel);
-void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel);
+void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status);
 void MoverCaixaEsquerda(CaixaC *caixa,int nivel);
 void MoverCaixaDireita(CaixaC *caixa,int nivel);
 
 void IniciarCaixaP(CaixaC *caixa,int nivel);
-void DesenharCaixaP(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel);
+void DesenharCaixaP(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status);
 void MoverCaixaEsquerdaP(CaixaC *caixa,int nivel);
 void MoverCaixaDireitaP(CaixaC *caixa,int nivel);
 
@@ -57,7 +57,7 @@ void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, in
 void IniciarNumero(Numeros numero[], int tamanho, int nivel);
 void DesenharNumero(Numeros numero[], int tamanho, ALLEGRO_FONT *fonte);
 void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel);
-void AtualizarNumero(Numeros numero[], int tamanho);
+void AtualizarNumero(Numeros numero[], int tamanho, CaixaC caixa, int *status);
 
 bool primos(Numeros numero[], int i);
 bool quadperfeito(Numeros numero[], int i);
@@ -67,6 +67,6 @@ void ColisaoPalavras(Palavras palavra[], int tamanhoN, CaixaC *caixa,CaixaC *cai
 void IniciarPalavra(Palavras palavra[], int tamanho, int nivel);
 void DesenharPalavra(Palavras palavra[], int tamanho, ALLEGRO_FONT *fonte);
 void ComecarPalavra(Palavras palavra[], int tamanho, int n, int nivel);
-void AtualizarPalavra(Palavras palavra[], int tamanho);
+void AtualizarPalavra(Palavras palavra[], int tamanho, int *status, CaixaC caixa);
 
 #endif // FUNCTION_H_INCLUDED
