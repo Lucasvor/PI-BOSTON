@@ -51,7 +51,7 @@
 	<allegro5/allegro_ttf.h>
 	"Function.h"
 
-1448395792 source:c:\users\gabriellins\downloads\project jogo\jogo\main.cpp
+1448781256 source:c:\users\gabriellins\downloads\project jogo\jogo\main.cpp
 	<cstdio>
 	<cstring>
 	<string>
@@ -61,11 +61,13 @@
 	<allegro5/allegro_primitives.h>
 	<allegro5/allegro_font.h>
 	<allegro5/allegro_ttf.h>
+	<allegro5/allegro_audio.h>
+	<allegro5/allegro_acodec.h>
 	"Function.h"
 
 1448395738 c:\users\gabriellins\downloads\project jogo\jogo\function.h
 
-1448395445 source:c:\users\gabriellins\downloads\project jogo\jogo\function.cpp
+1448781197 source:c:\users\gabriellins\downloads\project jogo\jogo\function.cpp
 	<cstdio>
 	<cstring>
 	<string>

@@ -8,11 +8,19 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
+
 
 #include "Function.h"
 
 enum TECLAS{ESQUERDA,DIREITA,ESQUERDAP,DIREITAP};
 bool teclas[4] = {false, false, false, false};
+
+ALLEGRO_SAMPLE *acertou = NULL;
+ALLEGRO_SAMPLE *errou = NULL;
+ALLEGRO_SAMPLE_INSTANCE *musicaIf1 = NULL,*musicaIf2 = NULL,*musicaIf3 = NULL,*musicaIf4 = NULL,*musicaIf5 = NULL,*musicaIf6 = NULL,*musicaIf7 = NULL;
+ALLEGRO_SAMPLE *musicaf1 = NULL,*musicaf2 = NULL,*musicaf3 = NULL,*musicaf4 = NULL,*musicaf5 = NULL,*musicaf6 = NULL,*musicaf7 = NULL;
 
 int main(int argc, char **argv){
     bool fim_do_jogo = false;
@@ -58,29 +66,61 @@ int main(int argc, char **argv){
     al_init_font_addon();
     al_init_ttf_addon();
     al_install_mouse();
+    al_install_audio();
+    al_init_acodec_addon();
     al_set_system_mouse_cursor(janela, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+    al_reserve_samples(10);
+    fonte = al_load_font("BEBAS.ttf", 18, 0);
+    if(!fonte){
+        fprintf(stderr, "Falha ao carregar fonte!\n");
+        return -1;
+    }
+    al_clear_to_color(al_map_rgb(0,0,0));
+    al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2-50, ALT/2, 0, "Carregando...", nivel);
+    al_flip_display();
+    acertou = al_load_sample("sounds/acertou.ogg");
+    errou = al_load_sample("sounds/errou.ogg");
+    musicaf1 = al_load_sample("sounds/fase1.ogg");
+    musicaf2 = al_load_sample("sounds/fase2.ogg");
+    musicaf3 = al_load_sample("sounds/fase3.ogg");
+    musicaf4 = al_load_sample("sounds/fase4.ogg");
+    musicaf5 = al_load_sample("sounds/fase5.ogg");
+    musicaf6 = al_load_sample("sounds/fase6.ogg");
+    musicaf7 = al_load_sample("sounds/fase7.ogg");
+    musicaIf1 = al_create_sample_instance(musicaf1);
+    musicaIf2 = al_create_sample_instance(musicaf2);
+    musicaIf3 = al_create_sample_instance(musicaf3);
+    musicaIf4 = al_create_sample_instance(musicaf4);
+    musicaIf5 = al_create_sample_instance(musicaf5);
+    musicaIf6 = al_create_sample_instance(musicaf6);
+    musicaIf7 = al_create_sample_instance(musicaf7);
+    al_set_sample_instance_playmode(musicaIf1, ALLEGRO_PLAYMODE_LOOP);
+    al_set_sample_instance_playmode(musicaIf2, ALLEGRO_PLAYMODE_LOOP);
+    al_set_sample_instance_playmode(musicaIf3, ALLEGRO_PLAYMODE_LOOP);
+    al_set_sample_instance_playmode(musicaIf4, ALLEGRO_PLAYMODE_LOOP);
+    al_set_sample_instance_playmode(musicaIf5, ALLEGRO_PLAYMODE_LOOP);
+    al_set_sample_instance_playmode(musicaIf6, ALLEGRO_PLAYMODE_LOOP);
+    al_set_sample_instance_playmode(musicaIf7, ALLEGRO_PLAYMODE_LOOP);
+    al_attach_sample_instance_to_mixer(musicaIf1, al_get_default_mixer());
+    al_attach_sample_instance_to_mixer(musicaIf2, al_get_default_mixer());
+    al_attach_sample_instance_to_mixer(musicaIf3, al_get_default_mixer());
+    al_attach_sample_instance_to_mixer(musicaIf4, al_get_default_mixer());
+    al_attach_sample_instance_to_mixer(musicaIf5, al_get_default_mixer());
+    al_attach_sample_instance_to_mixer(musicaIf6, al_get_default_mixer());
+    al_attach_sample_instance_to_mixer(musicaIf7, al_get_default_mixer());
 
     srand(time(NULL));
-
     fila_de_eventos = al_create_event_queue();
     if(!fila_de_eventos){
         fprintf(stderr, "Falha ao criar fila de eventos!\n");
         return -1;
     }
 
-    fonte = al_load_font("BEBAS.ttf", 18, 0);
-    if(!fonte){
-        fprintf(stderr, "Falha ao carregar fonte!\n");
-        return -1;
-    }
+
     al_register_event_source(fila_de_eventos, al_get_keyboard_event_source());
     al_register_event_source(fila_de_eventos, al_get_display_event_source(janela));
     al_register_event_source(fila_de_eventos, al_get_timer_event_source(timer));
     al_register_event_source(fila_de_eventos, al_get_mouse_event_source());
-
-    al_clear_to_color(al_map_rgb(0,0,0));
-    al_flip_display();
-
     al_start_timer(timer);
     ALLEGRO_EVENT evento;
     while (!fim_do_jogo){
@@ -157,169 +197,217 @@ int main(int argc, char **argv){
             al_flip_display();
     	}
     	if(Jogo == 1){
-            ALLEGRO_EVENT evento;
-        al_wait_for_event(fila_de_eventos, &evento);
-        if(!isGameOver){
-            if(caixa.vidas <= 0){
-                isGameOver = true;
-            }
-        }
-        if(evento.type == ALLEGRO_EVENT_TIMER){
-			if(acertos >= 10){
-                if(nivel==7){
-                    isGameOver = true;
-                }
-                nivel++;
-                acertos = 0;
-                Jogo = 2;
-                teclas[ESQUERDA] = false;
-                teclas[DIREITA] = false;
-                teclas[ESQUERDAP] = false;
-                teclas[DIREITAP] = false;
+            if(!isGameOver){
                 switch(nivel){
                 case 1:
-                    al_destroy_bitmap(imagem);
-                    imagem = al_load_bitmap("Fases/fase1.png");
+                    al_play_sample_instance(musicaIf1);
                     break;
                 case 2:
-                    al_destroy_bitmap(imagem);
-                    imagem = al_load_bitmap("Fases/fase2.jpg");
+                    al_play_sample_instance(musicaIf2);
                     break;
                 case 3:
-                    al_destroy_bitmap(imagem);
-                    imagem = al_load_bitmap("Fases/fase3.jpg");
+                    al_play_sample_instance(musicaIf3);
                     break;
                 case 4:
-                    al_destroy_bitmap(imagem);
-                    imagem = al_load_bitmap("Fases/fase4.jpg");
+                    al_play_sample_instance(musicaIf4);
                     break;
                 case 5:
-                    al_destroy_bitmap(imagem);
-                    imagem = al_load_bitmap("Fases/fase5.jpg");
+                    al_play_sample_instance(musicaIf5);
                     break;
                 case 6:
-                    al_destroy_bitmap(imagem);
-                    imagem = al_load_bitmap("Fases/fase6.jpg");
+                    al_play_sample_instance(musicaIf6);
                     break;
                 case 7:
-                    al_destroy_bitmap(imagem);
-                    imagem = al_load_bitmap("Fases/fase7.jpg");
+                    al_play_sample_instance(musicaIf7);
                     break;
                 }
-			}
-			if(!isGameOver){
-				al_draw_bitmap(imagem, 0,0,0);
-                PaineldeInfo(acertos, nivel, caixa, fonte);
-
-                al_draw_filled_rectangle(0,ALT - 45, LARG, ALT - 40, al_map_rgb(150,0,0));
-
-				if(nivel!=2){
-                    DesenharCaixa(caixa, fonte, nivel,&status);
-                    ComecarNumero(numero, QUANT_NUMEROS, n, nivel);
-                    AtualizarNumero(numero, QUANT_NUMEROS, caixa, &status);
-                    ColisaoNumeros(numero, QUANT_NUMEROS, &caixa, nivel, &acertos);
-                    DesenharNumero(numero, QUANT_NUMEROS, fonte);
+            }
+            ALLEGRO_EVENT evento;
+            al_wait_for_event(fila_de_eventos, &evento);
+            if(!isGameOver){
+                if(caixa.vidas <= 0){
+                    isGameOver = true;
                 }
-
-                if(nivel!=1){
-                    DesenharCaixaP(caixa2, fonte, nivel, &status2);
-                    ComecarPalavra(palavra, QUANT_PALAVRAS, n, nivel);
-                    AtualizarPalavra(palavra, QUANT_PALAVRAS, &status2, caixa2);
-                    ColisaoPalavras(palavra, QUANT_PALAVRAS, &caixa2, &caixa, nivel, &acertos);
-                    DesenharPalavra(palavra, QUANT_PALAVRAS, fonte);
+            }
+            if(evento.type == ALLEGRO_EVENT_TIMER){
+                if(nivel<3){
+                    if(acertos >= 10){
+                        nivel++;
+                        acertos = 0;
+                        Jogo = 2;
+                        teclas[ESQUERDA] = false;
+                        teclas[DIREITA] = false;
+                        teclas[ESQUERDAP] = false;
+                        teclas[DIREITAP] = false;
+                        switch(nivel){
+                        case 1:
+                            al_destroy_bitmap(imagem);
+                            imagem = al_load_bitmap("Fases/fase1.png");
+                            break;
+                        case 2:
+                            al_destroy_bitmap(imagem);
+                            imagem = al_load_bitmap("Fases/fase2.jpg");
+                            break;
+                        case 3:
+                            al_destroy_bitmap(imagem);
+                            imagem = al_load_bitmap("Fases/fase3.jpg");
+                            break;
+                        }
+                    }
+                }else{
+                    if(acertos >= 20){
+                        nivel++;
+                        acertos = 0;
+                        Jogo = 2;
+                        teclas[ESQUERDA] = false;
+                        teclas[DIREITA] = false;
+                        teclas[ESQUERDAP] = false;
+                        teclas[DIREITAP] = false;
+                        switch(nivel){
+                        case 3:
+                            al_destroy_bitmap(imagem);
+                            imagem = al_load_bitmap("Fases/fase3.jpg");
+                            break;
+                        case 4:
+                            al_destroy_bitmap(imagem);
+                            imagem = al_load_bitmap("Fases/fase4.jpg");
+                            break;
+                        case 5:
+                            al_destroy_bitmap(imagem);
+                            imagem = al_load_bitmap("Fases/fase5.jpg");
+                            break;
+                        case 6:
+                            al_destroy_bitmap(imagem);
+                            imagem = al_load_bitmap("Fases/fase6.jpg");
+                            break;
+                        case 7:
+                            al_destroy_bitmap(imagem);
+                            imagem = al_load_bitmap("Fases/fase7.jpg");
+                            break;
+                        }
+                    }
                 }
-
-                if(nivel>=3) al_draw_filled_rectangle((LARG/2)-5,0, (LARG/2)+5, ALT, al_map_rgb(255,0,0));
-
-                al_flip_display();
-			}
-            if(teclas[ESQUERDA] && !isGameOver){
-                MoverCaixaEsquerda(&caixa,nivel);
-                status = 2;
-            }
-            if(teclas[DIREITA] && !isGameOver){
-                MoverCaixaDireita(&caixa,nivel);
-                status = 1;
-            }
-            if(teclas[ESQUERDAP] && !isGameOver){
-                MoverCaixaEsquerdaP(&caixa2,nivel);
-                status2 = 2;
-            }
-            if(teclas[DIREITAP] && !isGameOver){
-                MoverCaixaDireitaP(&caixa2,nivel);
-                status2 = 1;
-            }
-        }else if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
-            fim_do_jogo = true;
-        }else if(evento.type == ALLEGRO_EVENT_KEY_DOWN){
-            switch(evento.keyboard.keycode){
-            case ALLEGRO_KEY_ESCAPE:
-                fim_do_jogo = true;
-                break;
-            case ALLEGRO_KEY_LEFT:
                 if(!isGameOver){
-                    teclas[ESQUERDA] = true;
+
+                    al_draw_bitmap(imagem, 0,0,0);
+                    PaineldeInfo(acertos, nivel, caixa, fonte);
+
+                    al_draw_filled_rectangle(0,ALT - 45, LARG, ALT - 40, al_map_rgb(150,0,0));
+
+                    if(nivel!=2){
+                        DesenharCaixa(caixa, fonte, nivel,&status);
+                        ComecarNumero(numero, QUANT_NUMEROS, n, nivel);
+                        AtualizarNumero(numero, QUANT_NUMEROS, caixa, &status);
+                        ColisaoNumeros(numero, QUANT_NUMEROS, &caixa, nivel, &acertos);
+                        DesenharNumero(numero, QUANT_NUMEROS, fonte);
+                    }
+
+                    if(nivel!=1){
+                        DesenharCaixaP(caixa2, fonte, nivel, &status2);
+                        ComecarPalavra(palavra, QUANT_PALAVRAS, n, nivel);
+                        AtualizarPalavra(palavra, QUANT_PALAVRAS, &status2, caixa2);
+                        ColisaoPalavras(palavra, QUANT_PALAVRAS, &caixa2, &caixa, nivel, &acertos);
+                        DesenharPalavra(palavra, QUANT_PALAVRAS, fonte);
+                    }
+
+                    if(nivel>=3) al_draw_filled_rectangle((LARG/2)-5,0, (LARG/2)+5, ALT, al_map_rgb(255,0,0));
+
+                    al_flip_display();
+                }
+                if(teclas[ESQUERDA] && !isGameOver){
+                    MoverCaixaEsquerda(&caixa,nivel);
                     status = 2;
                 }
-                break;
-            case ALLEGRO_KEY_RIGHT:
-                if(!isGameOver){
-                    teclas[DIREITA] = true;
+                if(teclas[DIREITA] && !isGameOver){
+                    MoverCaixaDireita(&caixa,nivel);
                     status = 1;
                 }
-                break;
-            case ALLEGRO_KEY_UP:
-                status = 3;
-                break;
-            case ALLEGRO_KEY_DOWN:
-                status = 4;
-                break;
-            case ALLEGRO_KEY_A:
-                if(!isGameOver){
-                    teclas[ESQUERDAP] = true;
+                if(teclas[ESQUERDAP] && !isGameOver){
+                    MoverCaixaEsquerdaP(&caixa2,nivel);
                     status2 = 2;
                 }
-                break;
-            case ALLEGRO_KEY_D:
-                if(!isGameOver){
-                    teclas[DIREITAP] = true;
+                if(teclas[DIREITAP] && !isGameOver){
+                    MoverCaixaDireitaP(&caixa2,nivel);
                     status2 = 1;
                 }
-                break;
-            case ALLEGRO_KEY_K:
-                if(!isGameOver){
-                acertos=10;
+            }else if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE){
+                fim_do_jogo = true;
+            }else if(evento.type == ALLEGRO_EVENT_KEY_DOWN){
+                switch(evento.keyboard.keycode){
+                case ALLEGRO_KEY_ESCAPE:
+                    fim_do_jogo = true;
+                    break;
+                case ALLEGRO_KEY_LEFT:
+                    if(!isGameOver){
+                        teclas[ESQUERDA] = true;
+                        status = 2;
+                    }
+                    break;
+                case ALLEGRO_KEY_RIGHT:
+                    if(!isGameOver){
+                        teclas[DIREITA] = true;
+                        status = 1;
+                    }
+                    break;
+                case ALLEGRO_KEY_UP:
+                    status = 3;
+                    break;
+                case ALLEGRO_KEY_DOWN:
+                    status = 4;
+                    break;
+                case ALLEGRO_KEY_A:
+                    if(!isGameOver){
+                        teclas[ESQUERDAP] = true;
+                        status2 = 2;
+                    }
+                    break;
+                case ALLEGRO_KEY_D:
+                    if(!isGameOver){
+                        teclas[DIREITAP] = true;
+                        status2 = 1;
+                    }
+                    break;
+                case ALLEGRO_KEY_K:
+                    if(!isGameOver){
+                    acertos=10;
+                    }
+                    break;
                 }
-                break;
+            }else if(evento.type == ALLEGRO_EVENT_KEY_UP){
+                switch(evento.keyboard.keycode){
+                case ALLEGRO_KEY_LEFT:
+                    status = 0;
+                    teclas[ESQUERDA] = false;
+                    break;
+                case ALLEGRO_KEY_RIGHT:
+                    status = 0;
+                    teclas[DIREITA] = false;
+                    break;
+                case ALLEGRO_KEY_A:
+                    status2 = 0;
+                    teclas[ESQUERDAP] = false;
+                    break;
+                case ALLEGRO_KEY_D:
+                    status2 = 0;
+                    teclas[DIREITAP] = false;
+                    break;
+                case ALLEGRO_KEY_UP:
+                    status = 0;
+                    break;
+                case ALLEGRO_KEY_DOWN:
+                    status = 0;
+                    break;
+                }
             }
-        }else if(evento.type == ALLEGRO_EVENT_KEY_UP){
-            switch(evento.keyboard.keycode){
-            case ALLEGRO_KEY_LEFT:
-                status = 0;
-                teclas[ESQUERDA] = false;
-                break;
-            case ALLEGRO_KEY_RIGHT:
-                status = 0;
-                teclas[DIREITA] = false;
-                break;
-            case ALLEGRO_KEY_A:
-                status2 = 0;
-                teclas[ESQUERDAP] = false;
-                break;
-            case ALLEGRO_KEY_D:
-                status2 = 0;
-                teclas[DIREITAP] = false;
-                break;
-            case ALLEGRO_KEY_UP:
-                status = 0;
-                break;
-            case ALLEGRO_KEY_DOWN:
-                status = 0;
-                break;
-            }
-        }
         if(isGameOver && al_is_event_queue_empty(fila_de_eventos)){
             if(isGameOver){
+                al_stop_sample_instance(musicaIf1);
+                al_stop_sample_instance(musicaIf2);
+                al_stop_sample_instance(musicaIf3);
+                al_stop_sample_instance(musicaIf4);
+                al_stop_sample_instance(musicaIf5);
+                al_stop_sample_instance(musicaIf6);
+                al_stop_sample_instance(musicaIf7);
                 al_draw_filled_rectangle(LARG/2-200,ALT/2-30, LARG/2+200, ALT/2+80, al_map_rgb(0,0,0));
                 if(nivel>7)
                     al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2,(ALT/2)-25, ALLEGRO_ALIGN_CENTRE, "Parabens!  Voce  terminou  o  jogo!");
@@ -333,10 +421,16 @@ int main(int argc, char **argv){
                     case ALLEGRO_KEY_PAD_ENTER:
                         Jogo = 0;
                         isGameOver = false;
+                        al_clear_to_color(al_map_rgb(0,0,0));
+                        al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2-50, ALT/2, 0, "Carregando...", nivel);
+                        al_flip_display();
                         break;
                     case ALLEGRO_KEY_ENTER:
                         Jogo = 0;
                         isGameOver = false;
+                        al_clear_to_color(al_map_rgb(0,0,0));
+                        al_draw_textf(fonte, al_map_rgb(255,255,255), LARG/2-50, ALT/2, 0, "Carregando...", nivel);
+                        al_flip_display();
                         break;
                     }
                 }
@@ -427,14 +521,29 @@ int main(int argc, char **argv){
                 al_flip_display();
                 break;
             }
+            al_stop_sample_instance(musicaIf1);
+            al_stop_sample_instance(musicaIf2);
+            al_stop_sample_instance(musicaIf3);
+            al_stop_sample_instance(musicaIf4);
+            al_stop_sample_instance(musicaIf5);
+            al_stop_sample_instance(musicaIf6);
+            al_stop_sample_instance(musicaIf7);
+            status = 0;
+            status2 = 0;
             al_wait_for_event(fila_de_eventos, &evento);
             if(evento.type == ALLEGRO_EVENT_KEY_DOWN){
                 switch(evento.keyboard.keycode){
                 case ALLEGRO_KEY_PAD_ENTER:
-                    Jogo = 1;
+                    if(nivel<8)
+                        Jogo = 1;
+                    if(nivel>=8)
+                        Jogo = 0;
                     break;
                 case ALLEGRO_KEY_ENTER:
-                    Jogo = 1;
+                    if(nivel<8)
+                        Jogo = 1;
+                    if(nivel>=8)
+                        Jogo = 0;
                     break;
                 case ALLEGRO_KEY_ESCAPE:
                     fim_do_jogo = true;
@@ -453,12 +562,26 @@ int main(int argc, char **argv){
                 caixa.velocidade = 9;
                 caixa2.velocidade = 9;
             }
-            status = 0;
-            status2 = 0;
         }
     }
     al_destroy_display(janela);
     al_destroy_bitmap(imagem);
+    al_destroy_sample(acertou);
+    al_destroy_sample(errou);
+    al_destroy_sample(musicaf1);
+    al_destroy_sample(musicaf2);
+    al_destroy_sample(musicaf3);
+    al_destroy_sample(musicaf4);
+    al_destroy_sample(musicaf5);
+    al_destroy_sample(musicaf6);
+    al_destroy_sample(musicaf7);
+    al_destroy_sample_instance(musicaIf1);
+    al_destroy_sample_instance(musicaIf2);
+    al_destroy_sample_instance(musicaIf3);
+    al_destroy_sample_instance(musicaIf4);
+    al_destroy_sample_instance(musicaIf5);
+    al_destroy_sample_instance(musicaIf6);
+    al_destroy_sample_instance(musicaIf7);
     return 0;
 }
 
@@ -489,6 +612,375 @@ void AtualizarPalavra(Palavras palavra[], int tamanho, int *status, CaixaC caixa
                palavra[i].y + palavra[i].limitey > caixa.y - caixa.limitey - 100){
                     *status = 5;
                }
+        }
+    }
+}
+
+void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, int *acertos){
+    bool colisaoa = false;
+    bool colisaob = false;
+    int i;
+    for(i = 0; i < tamanhoN;i++){
+        if(numero[i].vivo){
+            if(numero[i].x - numero[i].limitex < caixa->x + caixa->limitex &&
+               numero[i].x + numero[i].limitex > caixa->x - caixa->limitex &&
+               numero[i].y - numero[i].limitey < caixa->y + caixa->limitey &&
+               numero[i].y + numero[i].limitey > caixa->y - caixa->limitey){
+                colisaoa = true;
+                numero[i].vivo = false;
+            }else if(numero[i].y >= ALT-60){
+                numero[i].vivo = false;
+                colisaob = true;
+			}
+        }
+
+        //PS: Nivel 1 - Pares
+        //    Nivel 2 - Substantivos
+        //    Nivel 3 - Numerais/Divisiveis por 5
+        //    Nivel 4 - Adjetivos/Divisiveis por 3
+        //    Nivel 5 - Preposições/Primos
+        //    Nivel 6 - Verbos/Divisiveis por 7
+        //    Nivel 7 - Adverbios/Quadrados Perfeitos
+        switch(nivel){
+        case 1:
+            if(colisaoa){
+                if(numero[i].valor % 2 == 0){
+                    caixa->pontuacao += 10;
+                    colisaoa = false;
+				    *acertos+=1;
+				    al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    caixa->vidas--;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 10;
+                    colisaoa = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }
+            }else if(colisaob){
+                if(numero[i].valor % 2 == 0){
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 10;
+                    caixa->vidas--;
+                    colisaob = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    colisaob = false;
+                }
+            }
+        break;
+        case 3:
+            if(colisaoa){
+                if(numero[i].valor % 5 == 0){
+                    caixa->pontuacao += 12;
+                    colisaoa = false;
+				    *acertos+=1;
+				    al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    caixa->vidas--;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 8;
+                    colisaoa = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }
+            }else if(colisaob){
+                if(numero[i].valor % 5 == 0){
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 8;
+                    caixa->vidas--;
+                    colisaob = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    colisaob = false;
+                }
+            }
+        break;
+        case 4:
+			if(colisaoa){
+				if(numero[i].valor % 3 == 0){
+					caixa->pontuacao += 20;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixa->vidas--;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(numero[i].valor % 3 == 0){
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
+					caixa->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 5:
+			if(colisaoa){
+				if(primos(numero, i)){
+					caixa->pontuacao += 15;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixa->vidas--;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(primos(numero, i)){
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
+					caixa->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 6:
+			if(colisaoa){
+				if(numero[i].valor % 7 == 0){
+					caixa->pontuacao += 20;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixa->vidas--;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(numero[i].valor % 7 == 0){
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
+					caixa->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 7:
+			if(colisaoa){
+				if(quadperfeito(numero, i)){
+					caixa->pontuacao += 25;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixa->vidas--;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(quadperfeito(numero, i)){
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
+					caixa->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        }
+    }
+}
+
+void ColisaoPalavras(Palavras palavra[], int tamanhoN, CaixaC *caixa,CaixaC *caixan, int nivel, int *acertos){
+    bool colisaoa = false;
+    bool colisaob = false;
+    int i;
+    for(i = 0; i < tamanhoN;i++){
+        if(palavra[i].vivo){
+            if(palavra[i].x - palavra[i].limitex < caixa->x + caixa->limitex &&
+               palavra[i].x + palavra[i].limitex > caixa->x - caixa->limitex &&
+               palavra[i].y - palavra[i].limitey < caixa->y + caixa->limitey &&
+               palavra[i].y + palavra[i].limitey > caixa->y - caixa->limitey){
+                colisaoa = true;
+                palavra[i].vivo = false;
+            }else if(palavra[i].y == ALT-60){
+                palavra[i].vivo = false;
+                colisaob = true;
+			}
+        }
+
+        //PS: Nivel 1 - Pares
+        //    Nivel 2 - Substantivos
+        //    Nivel 3 - Numerais/Divisiveis por 5
+        //    Nivel 4 - Adjetivos/Divisiveis por 3
+        //    Nivel 5 - Preposições/Primos
+        //    Nivel 6 - Verbos/Divisiveis por 7
+        //    Nivel 7 - Adverbios/Quadrados Perfeitos
+
+        //colisaoa = bateu na caixa
+        //colisaob = bateu no chão
+        switch(nivel){
+        case 2:
+            if(colisaoa){
+                if(palavra[i].classificacao == 1){
+                    caixan->pontuacao += 10;
+                    colisaoa = false;
+				    *acertos+=1;
+				    al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    caixan->vidas--;
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 10;
+                    colisaoa = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }
+            }else if(colisaob){
+                if(palavra[i].classificacao == 1){
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 10;
+                    caixan->vidas--;
+                    colisaob = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    colisaob = false;
+                }
+            }
+        break;
+        case 3:
+            if(colisaoa){
+                if(palavra[i].classificacao == 2){
+                    caixan->pontuacao += 12;
+                    colisaoa = false;
+				    *acertos+=1;
+				    al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    caixan->vidas--;
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 8;
+                    colisaoa = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }
+            }else if(colisaob){
+                if(palavra[i].classificacao == 2){
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 8;
+                    caixan->vidas--;
+                    colisaob = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    colisaob = false;
+                }
+            }
+        break;
+        case 4:
+			if(colisaoa){
+				if(palavra[i].classificacao == 3){
+					caixan->pontuacao += 20;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixan->vidas--;
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(palavra[i].classificacao == 3){
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 5;
+					caixan->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 5:
+			if(colisaoa){
+				if(palavra[i].classificacao == 4){
+					caixan->pontuacao += 15;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixan->vidas--;
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(palavra[i].classificacao == 4){
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 5;
+					caixan->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 6:
+			if(colisaoa){
+				if(palavra[i].classificacao == 5){
+					caixan->pontuacao += 20;
+					colisaoa=false;
+					*acertos+=1;
+				}else{
+					caixan->vidas--;
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -=5;
+					colisaoa = false;
+				}
+			}else if(colisaob){
+				if(palavra[i].classificacao == 5){
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 5;
+					caixan->vidas--;
+					colisaob=false;
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 7:
+			if(colisaoa){
+				if(palavra[i].classificacao == 6){
+					caixan->pontuacao += 25;
+					colisaoa=false;
+					*acertos+=1;
+				}else{
+					caixan->vidas--;
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -=5;
+					colisaoa = false;
+				}
+			}else if(colisaob){
+				if(palavra[i].classificacao == 6){
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 5;
+					caixan->vidas--;
+					colisaob=false;
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
         }
     }
 }

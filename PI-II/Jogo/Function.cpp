@@ -17,7 +17,10 @@ void PaineldeInfo(int acertos, int nivel, CaixaC caixa, ALLEGRO_FONT *fonte){
     al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 5, 0, "Nivel  %i", nivel);
     al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 30, 0, "Vidas:  %i",caixa.vidas);
     al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 55, 0, "Pontos:  %i",caixa.pontuacao);
-    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 80, 0, "Acertos:  %i/10",acertos);
+    if(nivel<3)
+        al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 80, 0, "Acertos:  %i/10",acertos);
+    else
+        al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 80, 0, "Acertos:  %i/20",acertos);
 }
 //Parâmetros da Caixa e CaixaP(alavra)
 
@@ -202,182 +205,17 @@ void MoverCaixaDireitaP(CaixaC *caixa,int nivel){
     }
 }
 
-//Colisão
-void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, int *acertos){
-    bool colisaoa = false;
-    bool colisaob = false;
-    int i;
-    for(i = 0; i < tamanhoN;i++){
-        if(numero[i].vivo){
-            if(numero[i].x - numero[i].limitex < caixa->x + caixa->limitex &&
-               numero[i].x + numero[i].limitex > caixa->x - caixa->limitex &&
-               numero[i].y - numero[i].limitey < caixa->y + caixa->limitey &&
-               numero[i].y + numero[i].limitey > caixa->y - caixa->limitey){
-                colisaoa = true;
-                numero[i].vivo = false;
-            }else if(numero[i].y >= ALT-60){
-                numero[i].vivo = false;
-                colisaob = true;
-			}
-        }
-
-        //PS: Nivel 1 - Pares
-        //    Nivel 2 - Substantivos
-        //    Nivel 3 - Numerais/Divisiveis por 5
-        //    Nivel 4 - Adjetivos/Divisiveis por 3
-        //    Nivel 5 - Preposições/Primos
-        //    Nivel 6 - Verbos/Divisiveis por 7
-        //    Nivel 7 - Adverbios/Quadrados Perfeitos
-        switch(nivel){
-        case 1:
-            if(colisaoa){
-                if(numero[i].valor % 2 == 0){
-                    caixa->pontuacao += 10;
-                    colisaoa = false;
-				    *acertos+=1;
-                }else{
-                    caixa->vidas--;
-                    if(caixa->pontuacao > 0)
-                        caixa->pontuacao -= 10;
-                    colisaoa = false;
-                }
-            }else if(colisaob){
-                if(numero[i].valor % 2 == 0){
-                    if(caixa->pontuacao > 0)
-                        caixa->pontuacao -= 10;
-                    caixa->vidas--;
-                    colisaob = false;
-                }else{
-                    colisaob = false;
-                }
-            }
-        break;
-        case 3:
-            if(colisaoa){
-                if(numero[i].valor % 5 == 0){
-                    caixa->pontuacao += 12;
-                    colisaoa = false;
-				    *acertos+=1;
-                }else{
-                    caixa->vidas--;
-                    if(caixa->pontuacao > 0)
-                        caixa->pontuacao -= 8;
-                    colisaoa = false;
-                }
-            }else if(colisaob){
-                if(numero[i].valor % 5 == 0){
-                    if(caixa->pontuacao > 0)
-                        caixa->pontuacao -= 8;
-                    caixa->vidas--;
-                    colisaob = false;
-                }else{
-                    colisaob = false;
-                }
-            }
-        break;
-        case 4:
-			if(colisaoa){
-				if(numero[i].valor % 3 == 0){
-					caixa->pontuacao += 20;
-					colisaoa=false;
-					*acertos+=1;
-				}else{
-					caixa->vidas--;
-					if(caixa->pontuacao > 0)
-                        caixa->pontuacao -=5;
-					colisaoa = false;
-				}
-			}else if(colisaob){
-				if(numero[i].valor % 3 == 0){
-					if(caixa->pontuacao > 0)
-                        caixa->pontuacao -= 5;
-					caixa->vidas--;
-					colisaob=false;
-				}else{
-					colisaob = false;
-				}
-			}
-        break;
-        case 5:
-			if(colisaoa){
-				if(primos(numero, i)){
-					caixa->pontuacao += 15;
-					colisaoa=false;
-					*acertos+=1;
-				}else{
-					caixa->vidas--;
-					if(caixa->pontuacao > 0)
-                        caixa->pontuacao -=5;
-					colisaoa = false;
-				}
-			}else if(colisaob){
-				if(primos(numero, i)){
-                    if(caixa->pontuacao > 0)
-                        caixa->pontuacao -= 5;
-					caixa->vidas--;
-					colisaob=false;
-				}else{
-					colisaob = false;
-				}
-			}
-        break;
-        case 6:
-			if(colisaoa){
-				if(numero[i].valor % 7 == 0){
-					caixa->pontuacao += 20;
-					colisaoa=false;
-					*acertos+=1;
-				}else{
-					caixa->vidas--;
-					if(caixa->pontuacao > 0)
-                        caixa->pontuacao -=5;
-					colisaoa = false;
-				}
-			}else if(colisaob){
-				if(numero[i].valor % 7 == 0){
-                    if(caixa->pontuacao > 0)
-                        caixa->pontuacao -= 5;
-					caixa->vidas--;
-					colisaob=false;
-				}else{
-					colisaob = false;
-				}
-			}
-        break;
-        case 7:
-			if(colisaoa){
-				if(quadperfeito(numero, i)){
-					caixa->pontuacao += 25;
-					colisaoa=false;
-					*acertos+=1;
-				}else{
-					caixa->vidas--;
-					if(caixa->pontuacao > 0)
-                        caixa->pontuacao -=5;
-					colisaoa = false;
-				}
-			}else if(colisaob){
-				if(quadperfeito(numero, i)){
-					if(caixa->pontuacao > 0)
-                        caixa->pontuacao -= 5;
-					caixa->vidas--;
-					colisaob=false;
-				}else{
-					colisaob = false;
-				}
-			}
-        break;
-        }
-    }
-}
-
 //Parâmetros dos Números
 void IniciarNumero(Numeros numero[], int tamanho, int nivel){
     int i;
     for(i = 0; i < tamanho; i++){
         numero[i].ID = rand();
         numero[i].vivo = false;
-        numero[i].velocidade = 3;
+        if(nivel<=2){
+            numero[i].velocidade = 2;
+        }else{
+            numero[i].velocidade = 3;
+        }
         numero[i].limitex = 18;
         numero[i].limitey = 18;
     }
@@ -886,184 +724,15 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[299].palavra = "Ultimamente";
 }
 
-
-//Colisão
-void ColisaoPalavras(Palavras palavra[], int tamanhoN, CaixaC *caixa,CaixaC *caixan, int nivel, int *acertos){
-    bool colisaoa = false;
-    bool colisaob = false;
-    int i;
-    for(i = 0; i < tamanhoN;i++){
-        if(palavra[i].vivo){
-            if(palavra[i].x - palavra[i].limitex < caixa->x + caixa->limitex &&
-               palavra[i].x + palavra[i].limitex > caixa->x - caixa->limitex &&
-               palavra[i].y - palavra[i].limitey < caixa->y + caixa->limitey &&
-               palavra[i].y + palavra[i].limitey > caixa->y - caixa->limitey){
-                colisaoa = true;
-                palavra[i].vivo = false;
-            }else if(palavra[i].y == ALT-60){
-                palavra[i].vivo = false;
-                colisaob = true;
-			}
-        }
-
-        //PS: Nivel 1 - Pares
-        //    Nivel 2 - Substantivos
-        //    Nivel 3 - Numerais/Divisiveis por 5
-        //    Nivel 4 - Adjetivos/Divisiveis por 3
-        //    Nivel 5 - Preposições/Primos
-        //    Nivel 6 - Verbos/Divisiveis por 7
-        //    Nivel 7 - Adverbios/Quadrados Perfeitos
-
-        //colisaoa = bateu na caixa
-        //colisaob = bateu no chão
-        switch(nivel){
-        case 2:
-            if(colisaoa){
-                if(palavra[i].classificacao == 1){
-                    caixan->pontuacao += 10;
-                    colisaoa = false;
-				    *acertos+=1;
-                }else{
-                    caixan->vidas--;
-                    if(caixan->pontuacao > 0)
-                        caixan->pontuacao -= 10;
-                    colisaoa = false;
-                }
-            }else if(colisaob){
-                if(palavra[i].classificacao == 1){
-                    if(caixan->pontuacao > 0)
-                        caixan->pontuacao -= 10;
-                    caixan->vidas--;
-                    colisaob = false;
-                }else{
-                    colisaob = false;
-                }
-            }
-        break;
-        case 3:
-            if(colisaoa){
-                if(palavra[i].classificacao == 2){
-                    caixan->pontuacao += 12;
-                    colisaoa = false;
-				    *acertos+=1;
-                }else{
-                    caixan->vidas--;
-                    if(caixan->pontuacao > 0)
-                        caixan->pontuacao -= 8;
-                    colisaoa = false;
-                }
-            }else if(colisaob){
-                if(palavra[i].classificacao == 2){
-                    if(caixan->pontuacao > 0)
-                        caixan->pontuacao -= 8;
-                    caixan->vidas--;
-                    colisaob = false;
-                }else{
-                    colisaob = false;
-                }
-            }
-        break;
-        case 4:
-			if(colisaoa){
-				if(palavra[i].classificacao == 3){
-					caixan->pontuacao += 20;
-					colisaoa=false;
-					*acertos+=1;
-				}else{
-					caixan->vidas--;
-					if(caixan->pontuacao > 0)
-                        caixan->pontuacao -=5;
-					colisaoa = false;
-				}
-			}else if(colisaob){
-				if(palavra[i].classificacao == 3){
-					if(caixan->pontuacao > 0)
-                        caixan->pontuacao -= 5;
-					caixan->vidas--;
-					colisaob=false;
-				}else{
-					colisaob = false;
-				}
-			}
-        break;
-        case 5:
-			if(colisaoa){
-				if(palavra[i].classificacao == 4){
-					caixan->pontuacao += 15;
-					colisaoa=false;
-					*acertos+=1;
-				}else{
-					caixan->vidas--;
-					if(caixan->pontuacao > 0)
-                        caixan->pontuacao -=5;
-					colisaoa = false;
-				}
-			}else if(colisaob){
-				if(palavra[i].classificacao == 4){
-                    if(caixan->pontuacao > 0)
-                        caixan->pontuacao -= 5;
-					caixan->vidas--;
-					colisaob=false;
-				}else{
-					colisaob = false;
-				}
-			}
-        break;
-        case 6:
-			if(colisaoa){
-				if(palavra[i].classificacao == 5){
-					caixan->pontuacao += 20;
-					colisaoa=false;
-					*acertos+=1;
-				}else{
-					caixan->vidas--;
-					if(caixan->pontuacao > 0)
-                        caixan->pontuacao -=5;
-					colisaoa = false;
-				}
-			}else if(colisaob){
-				if(palavra[i].classificacao == 5){
-                    if(caixan->pontuacao > 0)
-                        caixan->pontuacao -= 5;
-					caixan->vidas--;
-					colisaob=false;
-				}else{
-					colisaob = false;
-				}
-			}
-        break;
-        case 7:
-			if(colisaoa){
-				if(palavra[i].classificacao == 6){
-					caixan->pontuacao += 25;
-					colisaoa=false;
-					*acertos+=1;
-				}else{
-					caixan->vidas--;
-					if(caixan->pontuacao > 0)
-                        caixan->pontuacao -=5;
-					colisaoa = false;
-				}
-			}else if(colisaob){
-				if(palavra[i].classificacao == 6){
-					if(caixan->pontuacao > 0)
-                        caixan->pontuacao -= 5;
-					caixan->vidas--;
-					colisaob=false;
-				}else{
-					colisaob = false;
-				}
-			}
-        break;
-        }
-    }
-}
-
 void IniciarPalavra(Palavras palavra[], int tamanho, int nivel){
     int i;
     for(i = 0; i < tamanho; i++){
         palavra[i].vivo = false;
-        palavra[i].velocidade = 3;
+        if(nivel>2){
+            palavra[i].velocidade = 3;
+        }else{
+            palavra[i].velocidade = 2;
+        }
         palavra[i].limitex = 50;
         palavra[i].limitey = 20;
     }
