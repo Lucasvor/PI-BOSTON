@@ -5,32 +5,22 @@
 		<Cursor>
 			<Cursor1 position="1060" topLine="0" />
 		</Cursor>
-		<Folding>
-			<Collapse line="98" />
-			<Collapse line="110" />
-			<Collapse line="117" />
-			<Collapse line="128" />
-			<Collapse line="188" />
-			<Collapse line="194" />
-			<Collapse line="223" />
-			<Collapse line="233" />
-			<Collapse line="329" />
-			<Collapse line="343" />
-			<Collapse line="359" />
-		</Folding>
-	</File>
-	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="18252" topLine="345" />
-		</Cursor>
-		<Folding>
-			<Collapse line="126" />
-			<Collapse line="199" />
-		</Folding>
 	</File>
 	<File name="Function.h" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
 			<Cursor1 position="2248" topLine="5" />
 		</Cursor>
+	</File>
+	<File name="main.cpp" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="1" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="14175" topLine="199" />
+		</Cursor>
+		<Folding>
+			<Collapse line="45" />
+			<Collapse line="51" />
+			<Collapse line="57" />
+			<Collapse line="113" />
+			<Collapse line="126" />
+		</Folding>
 	</File>
 </CodeBlocks_layout_file>

@@ -125,28 +125,69 @@ int main(int argc, char **argv){
     ALLEGRO_EVENT evento;
     while (!fim_do_jogo){
     	if(Jogo == 0){
-    		ALLEGRO_BITMAP *Menu = NULL, *Menu1 = NULL,*Menu2 = NULL,*Menu3 = NULL,*Sair = NULL;
+                int tempo=0;
+    		ALLEGRO_BITMAP *Menu = NULL,*Menu1s1 = NULL,*Menu1s2 = NULL,*Menu1s3 = NULL,*Menu1s4 = NULL,*Menu2s1 = NULL,*Menu2s2 = NULL,*Menu2s3 = NULL,*Menu2s4 = NULL,*Menu3s1 = NULL,*Menu3s2 = NULL,*Menu3s3 = NULL,*Menu3s4 = NULL,*Sair = NULL;
     		Menu = al_load_bitmap("Menu/Menu.jpg");
-    		Menu1= al_load_bitmap("Menu/Menu1.jpg");
-    		Menu2= al_load_bitmap("Menu/Menu2.jpg");
-   			Menu3= al_load_bitmap("Menu/Menu3.jpg");
-   		 	Sair = al_load_bitmap("Menu/Sair.jpg");
+    		Menu1s1= al_load_bitmap("Menu/Menu1s1.jpg");
+    		Menu1s2= al_load_bitmap("Menu/Menu1s2.jpg");
+    		Menu1s3= al_load_bitmap("Menu/Menu1s3.jpg");
+    		Menu1s4= al_load_bitmap("Menu/Menu1s4.jpg");
+    		Menu2s1= al_load_bitmap("Menu/Menu2s1.jpg");
+    		Menu2s2= al_load_bitmap("Menu/Menu2s2.jpg");
+    		Menu2s3= al_load_bitmap("Menu/Menu2s3.jpg");
+    		Menu2s4= al_load_bitmap("Menu/Menu2s4.jpg");
+    		Menu3s1= al_load_bitmap("Menu/Menu3s1.jpg");
+    		Menu3s2= al_load_bitmap("Menu/Menu3s2.jpg");
+    		Menu3s3= al_load_bitmap("Menu/Menu3s3.jpg");
+    		Menu3s4= al_load_bitmap("Menu/Menu3s4.jpg");
+   		 	Sair = al_load_bitmap("Menu/sair.jpg");
    		 	while(Jogo == 0){
                 switch(regiao){
                 case 4:
                     al_draw_bitmap(Sair,0,0,0);
                     break;
                 case 3:
-                    al_draw_bitmap(Menu3,0,0,0);
+                     if(tempo==0)
+                    al_draw_bitmap(Menu3s1,0,0,0);
+                    else if(tempo==10)
+                    al_draw_bitmap(Menu3s2,0,0,0);
+                    else if(tempo==20)
+                    al_draw_bitmap(Menu3s3,0,0,0);
+                    else if(tempo==30)
+                    al_draw_bitmap(Menu3s4,0,0,0);
+                    else if(tempo>=40)
+                        tempo=0;
+                    tempo++;
                     break;
                 case 2:
-                    al_draw_bitmap(Menu2,0,0,0);
+                     if(tempo==0)
+                    al_draw_bitmap(Menu2s1,0,0,0);
+                    else if(tempo==10)
+                    al_draw_bitmap(Menu2s2,0,0,0);
+                    else if(tempo==20)
+                    al_draw_bitmap(Menu2s3,0,0,0);
+                    else if(tempo==30)
+                    al_draw_bitmap(Menu2s4,0,0,0);
+                    else if(tempo>=40)
+                        tempo=0;
+                    tempo++;
                     break;
                 case 1:
-                    al_draw_bitmap(Menu1,0,0,0);
+                    if(tempo==0)
+                    al_draw_bitmap(Menu1s1,0,0,0);
+                    else if(tempo==10)
+                    al_draw_bitmap(Menu1s2,0,0,0);
+                    else if(tempo==20)
+                    al_draw_bitmap(Menu1s3,0,0,0);
+                    else if(tempo==30)
+                    al_draw_bitmap(Menu1s4,0,0,0);
+                    else if(tempo>=40)
+                        tempo=0;
+                    tempo++;
                     break;
                 case 0:
                     al_draw_bitmap(Menu,0,0,0);
+                    tempo=0;
                     break;
                 }
 
@@ -187,11 +228,21 @@ int main(int argc, char **argv){
                     fim_do_jogo = true;
                     break;
                 }
+
             }
             al_destroy_bitmap(Menu);
-            al_destroy_bitmap(Menu1);
-            al_destroy_bitmap(Menu2);
-            al_destroy_bitmap(Menu3);
+            al_destroy_bitmap(Menu1s1);
+            al_destroy_bitmap(Menu1s2);
+            al_destroy_bitmap(Menu1s3);
+            al_destroy_bitmap(Menu1s4);
+            al_destroy_bitmap(Menu2s1);
+            al_destroy_bitmap(Menu2s2);
+            al_destroy_bitmap(Menu2s3);
+            al_destroy_bitmap(Menu2s4);
+            al_destroy_bitmap(Menu3s1);
+            al_destroy_bitmap(Menu3s2);
+            al_destroy_bitmap(Menu3s3);
+            al_destroy_bitmap(Menu3s4);
             al_destroy_bitmap(Sair);
             al_clear_to_color(al_map_rgb(0,0,0));
             al_flip_display();
