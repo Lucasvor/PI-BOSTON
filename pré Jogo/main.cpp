@@ -16,6 +16,7 @@
 
 enum TECLAS{ESQUERDA,DIREITA,ESQUERDAP,DIREITAP};
 bool teclas[4] = {false, false, false, false};
+
 ALLEGRO_BITMAP *chip = NULL;
 ALLEGRO_SAMPLE *acertou = NULL;
 ALLEGRO_SAMPLE *errou = NULL;

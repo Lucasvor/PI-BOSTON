@@ -149,3 +149,31 @@
 	<allegro5/allegro_acodec.h>
 	"Function.h"
 
+1448854601 source:c:\users\lucas\desktop\pré jogo\function.cpp
+	<cstdio>
+	<cstring>
+	<string>
+	<iostream>
+	<allegro5/allegro.h>
+	<allegro5/allegro_image.h>
+	<allegro5/allegro_primitives.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_ttf.h>
+	"Function.h"
+
+1448852092 c:\users\lucas\desktop\pré jogo\function.h
+
+1448855923 source:c:\users\lucas\desktop\pré jogo\main.cpp
+	<cstdio>
+	<cstring>
+	<string>
+	<iostream>
+	<allegro5/allegro.h>
+	<allegro5/allegro_image.h>
+	<allegro5/allegro_primitives.h>
+	<allegro5/allegro_font.h>
+	<allegro5/allegro_ttf.h>
+	<allegro5/allegro_audio.h>
+	<allegro5/allegro_acodec.h>
+	"Function.h"
+

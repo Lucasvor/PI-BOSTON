@@ -748,10 +748,13 @@ void IniciarPalavra(Palavras palavra[], int tamanho, int nivel){
 
 void DesenharPalavra(Palavras palavra[], int tamanho, ALLEGRO_FONT *fonte){
     int i;
+    ALLEGRO_BITMAP *coisa = NULL;
+    coisa = al_load_bitmap("Backgrounds/palavra.png");
     for(i = 0; i < tamanho; i++){
         if(palavra[i].vivo){
-            al_draw_filled_rectangle(palavra[i].x-50,palavra[i].y -20, palavra[i].x + 50, palavra[i].y+20, al_map_rgb(0,0,0));
-            al_draw_textf(fonte, al_map_rgb(255,255,255), palavra[i].x,palavra[i].y-10, ALLEGRO_ALIGN_CENTRE, palavra[palavra[i].ID].palavra.c_str());
+                al_draw_bitmap(coisa,palavra[i].x,palavra[i].y,0);
+            //al_draw_filled_rectangle(palavra[i].x-50,palavra[i].y -20, palavra[i].x + 50, palavra[i].y+20, al_map_rgb(0,0,0));
+            al_draw_textf(fonte, al_map_rgb(255,255,255), palavra[i].x+55,palavra[i].y+5, ALLEGRO_ALIGN_CENTRE, palavra[palavra[i].ID].palavra.c_str());
         }
     }
 }
