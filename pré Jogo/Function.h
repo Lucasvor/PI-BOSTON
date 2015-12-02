@@ -4,7 +4,7 @@
 #define LARG 1280
 #define ALT 720
 #define FPS 60
-#define QUANT_NUMEROS 50
+#define QUANT_NUMEROS 4
 #define QUANT_PALAVRAS 300
 
 
@@ -56,7 +56,7 @@ void DesenharCaixaP(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status);
 void MoverCaixaEsquerdaP(CaixaC *caixa,int nivel);
 void MoverCaixaDireitaP(CaixaC *caixa,int nivel);
 
-void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, int *acertos);
+void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, int *acertos, ALLEGRO_SAMPLE *acertou, ALLEGRO_SAMPLE *errou);
 void IniciarNumero(Numeros numero[], int tamanho, int nivel);
 void DesenharNumero(Numeros numero[], int tamanho, ALLEGRO_FONT *fonte);
 void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel);
@@ -66,7 +66,7 @@ bool primos(Numeros numero[], int i);
 bool quadperfeito(Numeros numero[], int i);
 
 void DefinirPalavras(Palavras palavra[]);
-void ColisaoPalavras(Palavras palavra[], int tamanhoN, CaixaC *caixa,CaixaC *caixan, int nivel, int *acertos);
+void ColisaoPalavras(Palavras palavra[], int tamanhoN, CaixaC *caixa,CaixaC *caixan, int nivel, int *acertos, ALLEGRO_SAMPLE *acertou, ALLEGRO_SAMPLE *errou);
 void IniciarPalavra(Palavras palavra[], int tamanho, int nivel);
 void DesenharPalavra(Palavras palavra[], int tamanho, ALLEGRO_FONT *fonte);
 void ComecarPalavra(Palavras palavra[], int tamanho, int n, int nivel);
