@@ -7,23 +7,52 @@
 #include <allegro5/allegro_primitives.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_audio.h>
+#include <allegro5/allegro_acodec.h>
 
 #include "Function.h"
 
 
 
+ALLEGRO_BITMAP *chip = NULL;
+
+ALLEGRO_BITMAP *coisa = NULL;
 
 int frameatual = 0, framecontador = 0, framecd = 1, faltura,flargura,numframes;
 int frameatualp = 0, framecontadorp = 0, framecdp = 1, falturap,flargurap,numframesp;
 void PaineldeInfo(int acertos, int nivel, CaixaC caixa, ALLEGRO_FONT *fonte){
-    al_draw_filled_rectangle(3,3, 120, 110, al_map_rgb(0,0,0));
-    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 5, 0, "Nivel  %i", nivel);
-    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 30, 0, "Vidas:  %i",caixa.vidas);
-    al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 55, 0, "Pontos:  %i",caixa.pontuacao);
+        //al_draw_filled_rectangle(3,3, LARG-3, 40, al_map_rgb(0,0,0));
+    al_draw_textf(fonte, al_map_rgb(255,0,0), 5, 8, 0, "Nivel  %i", nivel);
+    al_draw_textf(fonte, al_map_rgb(255,0,0), 95, 8, 0, "Vidas:  %i",caixa.vidas);
+    al_draw_textf(fonte, al_map_rgb(255,0,0), 195, 8, 0, "Pontos:  %i",caixa.pontuacao);
     if(nivel<3)
-        al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 80, 0, "Acertos:  %i/10",acertos);
+        al_draw_textf(fonte, al_map_rgb(255,0,0), 300, 8, 0, "Acertos:  %i/10",acertos);
     else
-        al_draw_textf(fonte, al_map_rgb(255,255,255), 5, 80, 0, "Acertos:  %i/20",acertos);
+        al_draw_textf(fonte, al_map_rgb(255,0,0), 300, 8, 0, "Acertos:  %i/20",acertos);
+
+    switch(nivel){
+    case 1:
+        al_draw_textf(fonte, al_map_rgb(255,0,0), (LARG/4)*3, 8, 0, "Numeros  Pares");
+        break;
+    case 2:
+        al_draw_textf(fonte, al_map_rgb(255,0,0), (LARG/4)*3, 8, 0, "Substantivos");
+        break;
+    case 3:
+        al_draw_textf(fonte, al_map_rgb(255,0,0), (LARG/4)*3, 8, 0, "Numerais  e  Numeros divisiveis por 5");
+        break;
+    case 4:
+        al_draw_textf(fonte, al_map_rgb(255,0,0), (LARG/4)*3, 8, 0, "Adjetivos  e  Numeros divisiveis por 3");
+        break;
+    case 5:
+        al_draw_textf(fonte, al_map_rgb(255,0,0), (LARG/4)*3, 8, 0, "Preposicoes  e  Numeros primos");
+        break;
+    case 6:
+        al_draw_textf(fonte, al_map_rgb(255,0,0), (LARG/4)*3, 8, 0, "Verbos  e  Numeros  divisiveis  por  7");
+        break;
+    case 7:
+        al_draw_textf(fonte, al_map_rgb(255,0,255), (LARG/4)*3, 8, 0, "Adverbios  e  Quadrados  Perfeitos");
+        break;
+    }
 }
 //Parâmetros da Caixa e CaixaP(alavra)
 
@@ -36,6 +65,8 @@ void IniciarCaixa(CaixaC *caixa, int nivel){
     caixa->limitex = 22;
     caixa->limitey = 85;
     caixa->pontuacao = 0;
+    chip = al_load_bitmap("Backgrounds/chip.png");
+    coisa = al_load_bitmap("Backgrounds/palavra.png");
 }
 
 void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status){
@@ -89,6 +120,7 @@ void DesenharCaixa(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status){
         al_draw_bitmap_region(imagem,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
     }
     al_draw_bitmap_region(imagem,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
+    al_destroy_bitmap(imagem);
 
     //PS: Nivel 1 - Pares
     //    Nivel 2 - Substantivos
@@ -130,41 +162,41 @@ void IniciarCaixaP(CaixaC *caixa, int nivel){
 }
 
 void DesenharCaixaP(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status){
-    ALLEGRO_BITMAP *imagem = NULL;
+    ALLEGRO_BITMAP *imagem2 = NULL;
     switch(*status){ //0: Parado / 1: Andando Direita / 2: Andando Esquerda /
                     //3: Fantasma Direita /  4: Fantasma Esquerdo / 5: Olhar para cima direita /
     case 0:
-        imagem = al_load_bitmap("sprites/frente.png");
+        imagem2 = al_load_bitmap("sprites/frente.png");
         numframesp = 5;
         flargurap = 65;
         falturap = 76;
         break;
     case 1:
-        imagem = al_load_bitmap("sprites/cu.png");
+        imagem2 = al_load_bitmap("sprites/cu.png");
         numframesp = 4;
         flargurap = 63;
         falturap = 81;
         break;
     case 2:
-        imagem = al_load_bitmap("sprites/Cuesquerdo.png");
+        imagem2 = al_load_bitmap("sprites/Cuesquerdo.png");
         numframesp = 4;
         flargurap = 63;
         falturap = 81;
         break;
     case 3:
-        imagem = al_load_bitmap("sprites/fantasma-atualizado-D.png");
+        imagem2 = al_load_bitmap("sprites/fantasma-atualizado-D.png");
         numframesp = 14;
         flargurap = 67;
         falturap = 72;
         break;
     case 4:
-        imagem = al_load_bitmap("sprites/fantasma-atualizado-E.png");
+        imagem2 = al_load_bitmap("sprites/fantasma-atualizado-E.png");
         numframesp = 14;
         flargurap = 67;
         falturap = 72;
         break;
     case 5:
-        imagem = al_load_bitmap("sprites/ceu.png");
+        imagem2 = al_load_bitmap("sprites/ceu.png");
         numframesp = 8;
         flargurap = 65;
         falturap = 78;
@@ -177,9 +209,10 @@ void DesenharCaixaP(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status){
                 *status = 0;
             frameatualp=0;
         }
-        al_draw_bitmap_region(imagem,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
+        al_draw_bitmap_region(imagem2,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
     }
-    al_draw_bitmap_region(imagem,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
+    al_draw_bitmap_region(imagem2,frameatual*flargura,0,flargura,faltura,caixa.x-(1.5*caixa.limitex),caixa.y-100,0);
+    al_destroy_bitmap(imagem2);
 
     //PS: Nivel 1 - Pares
     //    Nivel 2 - Substantivos
@@ -191,19 +224,19 @@ void DesenharCaixaP(CaixaC caixa, ALLEGRO_FONT *fonte, int nivel, int *status){
 }
 void MoverCaixaEsquerdaP(CaixaC *caixa,int nivel){
     caixa->x -= caixa->velocidade;
-    if(caixa->x<60){
-        caixa->x = 60;
+    if(caixa->x<22){
+        caixa->x = 22;
     }
 }
 void MoverCaixaDireitaP(CaixaC *caixa,int nivel){
     caixa->x += caixa->velocidade;
     if(nivel==2){
-        if(caixa->x>LARG-60){
-            caixa->x = LARG-60;
+        if(caixa->x>LARG-22){
+            caixa->x = LARG-22;
         }
     }else{
-        if(caixa->x>(LARG/2)-60){
-            caixa->x = (LARG/2)-60;
+        if(caixa->x>(LARG/2)-62){
+            caixa->x = (LARG/2)-62;
         }
     }
 }
@@ -214,27 +247,18 @@ void IniciarNumero(Numeros numero[], int tamanho, int nivel){
     for(i = 0; i < tamanho; i++){
         numero[i].ID = rand();
         numero[i].vivo = false;
-        if(nivel<=2){
-            numero[i].velocidade = 2;
-        }else{
-            numero[i].velocidade = 3;
-        }
-        numero[i].limitex = 18;
-        numero[i].limitey = 18;
+        numero[i].velocidade = 2;
+        numero[i].limitex = 31;
+        numero[i].limitey = 31;
     }
 }
 
 void DesenharNumero(Numeros numero[], int tamanho, ALLEGRO_FONT *fonte){
     int i;
-    ALLEGRO_BITMAP *chip = NULL;
-    chip = al_load_bitmap("Backgrounds/chip.png");
-
     for(i = 0; i < tamanho; i++){
         if(numero[i].vivo){
-
-        	al_draw_bitmap(chip,numero[i].x,numero[i].y,0);
-            //al_draw_filled_circle(numero[i].x, numero[i].y, 20, al_map_rgb(255,0,0));
-            al_draw_textf(fonte, al_map_rgb(0,0,0), numero[i].x+30,numero[i].y+17, ALLEGRO_ALIGN_CENTRE, "%i", numero[i].valor);
+            al_draw_bitmap(chip,numero[i].x-numero[i].limitex,numero[i].y-numero[i].limitey,0);
+        	al_draw_textf(fonte, al_map_rgb(0,0,0), numero[i].x,numero[i].y-14, ALLEGRO_ALIGN_CENTRE, "%i", numero[i].valor);
         }
     }
 }
@@ -243,13 +267,13 @@ void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel){
     int i,certo;
     for(i = 0; i < tamanho; i++){
         if(!numero[i].vivo){
-            if(n % 100 == 0){
+            if(n % 200 == 0){
                 numero[i].vivo = true;
                 if(nivel<3){
-                    numero[i].x = 40 + rand() % (LARG - 60);
+                    numero[i].x = numero[i].limitex + rand() % (LARG - 70);
                     numero[i].y = 0;
                 }else{
-                    numero[i].x = ((LARG/2)+40) + rand() % ((LARG/2) - 60);
+                    numero[i].x = ((LARG/2)+numero[i].limitex) + rand() % ((LARG/2) - 60);
                     numero[i].y = 0;
                 }
                 certo = rand() % 2;
@@ -331,6 +355,208 @@ void ComecarNumero(Numeros numero[], int tamanho, int n, int nivel){
                 }
                 break;
             }
+        }
+    }
+}
+
+void AtualizarNumero(Numeros numero[], int tamanho, CaixaC caixa, int *status){
+    int i;
+
+    for(i=0; i<tamanho;i++){
+        if(numero[i].vivo){
+            numero[i].y += numero[i].velocidade;
+            if(numero[i].x - numero[i].limitex < caixa.x + caixa.limitex + 30 &&
+               numero[i].x + numero[i].limitex > caixa.x - caixa.limitex - 30 &&
+               numero[i].y - numero[i].limitey < caixa.y + caixa.limitey -5 &&
+               numero[i].y + numero[i].limitey > caixa.y - caixa.limitey - 100){
+                    *status = 5;
+               }
+        }
+    }
+}
+
+void ColisaoNumeros(Numeros numero[], int tamanhoN, CaixaC *caixa, int nivel, int *acertos, ALLEGRO_SAMPLE *acertou, ALLEGRO_SAMPLE *errou){
+    bool colisaoa = false;
+    bool colisaob = false;
+    int i;
+    for(i = 0; i < tamanhoN;i++){
+        if(numero[i].vivo){
+            if(numero[i].x - numero[i].limitex < caixa->x + caixa->limitex &&
+               numero[i].x + numero[i].limitex > caixa->x - caixa->limitex &&
+               numero[i].y - numero[i].limitey < caixa->y + caixa->limitey &&
+               numero[i].y + numero[i].limitey > caixa->y - caixa->limitey){
+                colisaoa = true;
+                numero[i].vivo = false;
+            }else if(numero[i].y >= ALT-60){
+                numero[i].vivo = false;
+                colisaob = true;
+			}
+        }
+
+        //PS: Nivel 1 - Pares
+        //    Nivel 2 - Substantivos
+        //    Nivel 3 - Numerais/Divisiveis por 5
+        //    Nivel 4 - Adjetivos/Divisiveis por 3
+        //    Nivel 5 - Preposições/Primos
+        //    Nivel 6 - Verbos/Divisiveis por 7
+        //    Nivel 7 - Adverbios/Quadrados Perfeitos
+        switch(nivel){
+        case 1:
+            if(colisaoa){
+                if(numero[i].valor % 2 == 0){
+                    caixa->pontuacao += 10;
+                    colisaoa = false;
+				    *acertos+=1;
+				    al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    caixa->vidas--;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 10;
+                    colisaoa = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }
+            }else if(colisaob){
+                if(numero[i].valor % 2 == 0){
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 10;
+                    caixa->vidas--;
+                    colisaob = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    colisaob = false;
+                }
+            }
+        break;
+        case 3:
+            if(colisaoa){
+                if(numero[i].valor % 5 == 0){
+                    caixa->pontuacao += 12;
+                    colisaoa = false;
+				    *acertos+=1;
+				    al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    caixa->vidas--;
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 8;
+                    colisaoa = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }
+            }else if(colisaob){
+                if(numero[i].valor % 5 == 0){
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 8;
+                    caixa->vidas--;
+                    colisaob = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    colisaob = false;
+                }
+            }
+        break;
+        case 4:
+			if(colisaoa){
+				if(numero[i].valor % 3 == 0){
+					caixa->pontuacao += 20;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixa->vidas--;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(numero[i].valor % 3 == 0){
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
+					caixa->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 5:
+			if(colisaoa){
+				if(primos(numero, i)){
+					caixa->pontuacao += 15;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixa->vidas--;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(primos(numero, i)){
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
+					caixa->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 6:
+			if(colisaoa){
+				if(numero[i].valor % 7 == 0){
+					caixa->pontuacao += 20;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixa->vidas--;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(numero[i].valor % 7 == 0){
+                    if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
+					caixa->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 7:
+			if(colisaoa){
+				if(quadperfeito(numero, i)){
+					caixa->pontuacao += 25;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixa->vidas--;
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(quadperfeito(numero, i)){
+					if(caixa->pontuacao > 0)
+                        caixa->pontuacao -= 5;
+					caixa->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
         }
     }
 }
@@ -427,7 +653,7 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[30].palavra = "Quadrado";
     palavra[31].palavra = "Quadra";
     palavra[32].palavra = "Roda";
-    palavra[33].palavra = "Rádio";
+    palavra[33].palavra = "Radio";
     palavra[34].palavra = "Sabonete";
     palavra[35].palavra = "Sal";
     palavra[36].palavra = "Tatuagem";
@@ -438,10 +664,10 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[41].palavra = "Vestido";
     palavra[42].palavra = "Xadrez";
     palavra[43].palavra = "Xerife";
-    palavra[44].palavra = "Zembra";
+    palavra[44].palavra = "Zebra";
     palavra[45].palavra = "Zumbi";
     palavra[46].palavra = "Bolha";
-    palavra[47].palavra = "Avião";
+    palavra[47].palavra = "Aviao";
     palavra[48].palavra = "Batata";
     palavra[49].palavra = "Pedra";
 
@@ -455,7 +681,7 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[52].palavra = "Primeiro";
     palavra[53].palavra = "Segundo";
     palavra[54].palavra = "Trinta";
-    palavra[55].palavra = "dois";
+    palavra[55].palavra = "Dois";
     palavra[56].palavra = "Duplo";
     palavra[57].palavra = "Dobro";
     palavra[58].palavra = "Metade";
@@ -465,32 +691,32 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[62].palavra = "Vinte";
     palavra[63].palavra = "Triplo";
     palavra[64].palavra = "Trio";
-    palavra[65].palavra = "Terço";
+    palavra[65].palavra = "Terco";
     palavra[66].palavra = "Oitenta";
     palavra[67].palavra = "Quatro";
     palavra[68].palavra = "Quarto";
     palavra[69].palavra = "Quarteto";
     palavra[70].palavra = "Sete";
-    palavra[71].palavra = "Sétimo";
+    palavra[71].palavra = "Setimo";
     palavra[72].palavra = "Noventa";
     palavra[73].palavra = "Cinquenta";
     palavra[74].palavra = "Oitavo";
     palavra[75].palavra = "Treze";
     palavra[76].palavra = "Doze";
-    palavra[77].palavra = "Dúzia";
+    palavra[77].palavra = "Duzia";
     palavra[78].palavra = "Meio";
     palavra[79].palavra = "Mil";
     palavra[80].palavra = "Novecentos";
-    palavra[81].palavra = "Milésimo";
-    palavra[82].palavra = "Centésimo";
+    palavra[81].palavra = "Milesimo";
+    palavra[82].palavra = "Centesimo";
     palavra[83].palavra = "Milhar";
-    palavra[84].palavra = "Trigésimo";
+    palavra[84].palavra = "Trigesimo";
     palavra[85].palavra = "Dez";
     palavra[86].palavra = "Sessenta";
     palavra[87].palavra = "Duzentos";
     palavra[88].palavra = "Cem";
     palavra[89].palavra = "Centena";
-    palavra[90].palavra = "Milhão";
+    palavra[90].palavra = "Milhao";
     palavra[91].palavra = "Trezentos";
     palavra[92].palavra = "Oitocentos";
     palavra[93].palavra = "Quatorze";
@@ -589,11 +815,11 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[172].palavra = "mediante";
     palavra[173].palavra = "tirante";
     palavra[174].palavra = "exceto";
-    palavra[175].palavra = "senão";
+    palavra[175].palavra = "senao";
     palavra[176].palavra = "visto";
-    palavra[177].palavra = "a fim de";
-    palavra[178].palavra = "alem de";
-    palavra[179].palavra = "apesar de";
+    palavra[177].palavra = "a  fim  de";
+    palavra[178].palavra = "alem  de";
+    palavra[179].palavra = "apesar  de";
     palavra[180].palavra = "do";
     palavra[181].palavra = "disto";
     palavra[182].palavra = "disso";
@@ -602,18 +828,18 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[185].palavra = "naqueles";
     palavra[186].palavra = "naquela";
     palavra[187].palavra = "naquelas";
-    palavra[188].palavra = "em vez de";
-    palavra[189].palavra = "gracas a";
-    palavra[190].palavra = "sob pena de";
-    palavra[191].palavra = "a respeito de";
-    palavra[192].palavra = "ao encontro de";
-    palavra[193].palavra = "junto com";
-    palavra[194].palavra = "junto de";
-    palavra[195].palavra = "junto a";
-    palavra[196].palavra = "defronte de";
-    palavra[197].palavra = "atraves de";
-    palavra[198].palavra = "gracas a";
-    palavra[199].palavra = "a par de";
+    palavra[188].palavra = "em  vez  de";
+    palavra[189].palavra = "gracas  a";
+    palavra[190].palavra = "sob  pena  de";
+    palavra[191].palavra = "a  respeito  de";
+    palavra[192].palavra = "ao  encontro  de";
+    palavra[193].palavra = "junto  com";
+    palavra[194].palavra = "junto  de";
+    palavra[195].palavra = "junto  a";
+    palavra[196].palavra = "defronte  de";
+    palavra[197].palavra = "atraves  de";
+    palavra[198].palavra = "gracas  a";
+    palavra[199].palavra = "a  par  de";
 
 
 
@@ -702,7 +928,7 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[269].palavra = "Sim";
     palavra[270].palavra = "Certamente";
     palavra[271].palavra = "Realmente";
-    palavra[272].palavra = "Não";
+    palavra[272].palavra = "Nao";
     palavra[273].palavra = "Nem";
     palavra[274].palavra = "Certo";
     palavra[275].palavra = "Jamais";
@@ -718,7 +944,7 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[285].palavra = "Ainda";
     palavra[286].palavra = "com";
     palavra[287].palavra = "Somente";
-    palavra[288].palavra = "Então";
+    palavra[288].palavra = "Entao";
     palavra[289].palavra = "Assim";
     palavra[290].palavra = "Melhor";
     palavra[291].palavra = "Pior";
@@ -727,7 +953,7 @@ void DefinirPalavras(Palavras palavra[]){
     palavra[294].palavra = "Afinal";
     palavra[295].palavra = "Embaixo";
     palavra[296].palavra = "Aonde";
-    palavra[297].palavra = "Detrás";
+    palavra[297].palavra = "Detras";
     palavra[298].palavra = "Rapidamente";
     palavra[299].palavra = "Ultimamente";
 }
@@ -736,25 +962,18 @@ void IniciarPalavra(Palavras palavra[], int tamanho, int nivel){
     int i;
     for(i = 0; i < tamanho; i++){
         palavra[i].vivo = false;
-        if(nivel>2){
-            palavra[i].velocidade = 3;
-        }else{
-            palavra[i].velocidade = 2;
-        }
-        palavra[i].limitex = 50;
-        palavra[i].limitey = 20;
+        palavra[i].velocidade = 2;
+        palavra[i].limitex = 55;
+        palavra[i].limitey = 18;
     }
 }
 
 void DesenharPalavra(Palavras palavra[], int tamanho, ALLEGRO_FONT *fonte){
     int i;
-    ALLEGRO_BITMAP *coisa = NULL;
-    coisa = al_load_bitmap("Backgrounds/palavra.png");
     for(i = 0; i < tamanho; i++){
         if(palavra[i].vivo){
-                al_draw_bitmap(coisa,palavra[i].x,palavra[i].y,0);
-            //al_draw_filled_rectangle(palavra[i].x-50,palavra[i].y -20, palavra[i].x + 50, palavra[i].y+20, al_map_rgb(0,0,0));
-            al_draw_textf(fonte, al_map_rgb(255,255,255), palavra[i].x+55,palavra[i].y+5, ALLEGRO_ALIGN_CENTRE, palavra[palavra[i].ID].palavra.c_str());
+            al_draw_bitmap(coisa,palavra[i].x-palavra[i].limitex,palavra[i].y-palavra[i].limitey,0);
+            al_draw_textf(fonte, al_map_rgb(255,255,255), palavra[i].x,palavra[i].y-10, ALLEGRO_ALIGN_CENTRE, palavra[palavra[i].ID].palavra.c_str());
         }
     }
 }
@@ -763,7 +982,7 @@ void ComecarPalavra(Palavras palavra[], int tamanho, int n, int nivel){
     int i,aux,certo;
     for(i = 0; i < tamanho; i++){
         if(!palavra[i].vivo){
-            if(n % 100 == 0){
+            if(n % 150 == 0){
                 certo = rand() % 2;
                 if(certo==1){
                     switch(nivel){
@@ -815,13 +1034,12 @@ void ComecarPalavra(Palavras palavra[], int tamanho, int n, int nivel){
                         break;
                     }
                 }
-
-                palavra[aux].vivo = true;
+                if(!palavra[aux].vivo) palavra[aux].vivo = true;
                 if(nivel<3){
-                    palavra[aux].x = 100 + rand() % (LARG - 100);
+                    palavra[aux].x = 55 + rand() % (LARG - 165);
                     palavra[aux].y = 0;
                 }else{
-                    palavra[aux].x = 100 + rand() % ((LARG/2) - 150);
+                    palavra[aux].x = 55 + rand() % ((LARG/2) - 165);
                     palavra[aux].y = 0;
                 }
                 break;
@@ -830,11 +1048,200 @@ void ComecarPalavra(Palavras palavra[], int tamanho, int n, int nivel){
     }
 }
 
-void AtualizarPalavra(Palavras palavra[], int tamanho){
+void AtualizarPalavra(Palavras palavra[], int tamanho, int *status, CaixaC caixa){
     int i;
     for(i=0; i<tamanho;i++){
         if(palavra[i].vivo){
             palavra[i].y += palavra[i].velocidade;
+            if(palavra[i].x - palavra[i].limitex < caixa.x + caixa.limitex + 30 &&
+               palavra[i].x + palavra[i].limitex > caixa.x - caixa.limitex - 30 &&
+               palavra[i].y - palavra[i].limitey < caixa.y + caixa.limitey -5 &&
+               palavra[i].y + palavra[i].limitey > caixa.y - caixa.limitey - 100){
+                    *status = 5;
+               }
+        }
+    }
+}
+
+void ColisaoPalavras(Palavras palavra[], int tamanhoN, CaixaC *caixa,CaixaC *caixan, int nivel, int *acertos, ALLEGRO_SAMPLE *acertou, ALLEGRO_SAMPLE *errou){
+    bool colisaoa = false;
+    bool colisaob = false;
+    int i;
+    for(i = 0; i < tamanhoN;i++){
+        if(palavra[i].vivo){
+            if(palavra[i].x - palavra[i].limitex < caixa->x + caixa->limitex &&
+               palavra[i].x + palavra[i].limitex > caixa->x - caixa->limitex &&
+               palavra[i].y - palavra[i].limitey < caixa->y + caixa->limitey &&
+               palavra[i].y + palavra[i].limitey > caixa->y - caixa->limitey){
+                colisaoa = true;
+                palavra[i].vivo = false;
+            }else if(palavra[i].y >= ALT-60){
+                palavra[i].vivo = false;
+                colisaob = true;
+			}
+        }
+
+        //PS: Nivel 1 - Pares
+        //    Nivel 2 - Substantivos
+        //    Nivel 3 - Numerais/Divisiveis por 5
+        //    Nivel 4 - Adjetivos/Divisiveis por 3
+        //    Nivel 5 - Preposições/Primos
+        //    Nivel 6 - Verbos/Divisiveis por 7
+        //    Nivel 7 - Adverbios/Quadrados Perfeitos
+
+        //colisaoa = bateu na caixa
+        //colisaob = bateu no chão
+        switch(nivel){
+        case 2:
+            if(colisaoa){
+                if(palavra[i].classificacao == 1){
+                    caixan->pontuacao += 10;
+                    colisaoa = false;
+				    *acertos+=1;
+				    al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    caixan->vidas--;
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 10;
+                    colisaoa = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }
+            }else if(colisaob){
+                if(palavra[i].classificacao == 1){
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 10;
+                    caixan->vidas--;
+                    colisaob = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    colisaob = false;
+                }
+            }
+        break;
+        case 3:
+            if(colisaoa){
+                if(palavra[i].classificacao == 2){
+                    caixan->pontuacao += 12;
+                    colisaoa = false;
+				    *acertos+=1;
+				    al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    caixan->vidas--;
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 8;
+                    colisaoa = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }
+            }else if(colisaob){
+                if(palavra[i].classificacao == 2){
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 8;
+                    caixan->vidas--;
+                    colisaob = false;
+                    al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+                }else{
+                    colisaob = false;
+                }
+            }
+        break;
+        case 4:
+			if(colisaoa){
+				if(palavra[i].classificacao == 3){
+					caixan->pontuacao += 20;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixan->vidas--;
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(palavra[i].classificacao == 3){
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 5;
+					caixan->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 5:
+			if(colisaoa){
+				if(palavra[i].classificacao == 4){
+					caixan->pontuacao += 15;
+					colisaoa=false;
+					*acertos+=1;
+					al_play_sample(acertou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					caixan->vidas--;
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -=5;
+					colisaoa = false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}
+			}else if(colisaob){
+				if(palavra[i].classificacao == 4){
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 5;
+					caixan->vidas--;
+					colisaob=false;
+					al_play_sample(errou,1,0,1,ALLEGRO_PLAYMODE_ONCE,0);
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 6:
+			if(colisaoa){
+				if(palavra[i].classificacao == 5){
+					caixan->pontuacao += 20;
+					colisaoa=false;
+					*acertos+=1;
+				}else{
+					caixan->vidas--;
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -=5;
+					colisaoa = false;
+				}
+			}else if(colisaob){
+				if(palavra[i].classificacao == 5){
+                    if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 5;
+					caixan->vidas--;
+					colisaob=false;
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
+        case 7:
+			if(colisaoa){
+				if(palavra[i].classificacao == 6){
+					caixan->pontuacao += 25;
+					colisaoa=false;
+					*acertos+=1;
+				}else{
+					caixan->vidas--;
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -=5;
+					colisaoa = false;
+				}
+			}else if(colisaob){
+				if(palavra[i].classificacao == 6){
+					if(caixan->pontuacao > 0)
+                        caixan->pontuacao -= 5;
+					caixan->vidas--;
+					colisaob=false;
+				}else{
+					colisaob = false;
+				}
+			}
+        break;
         }
     }
 }
